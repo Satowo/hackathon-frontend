@@ -1,0 +1,17 @@
+.user-box {
+    text-align: center;
+}
+
+
+
+.user {
+    width: 60%;
+    height: 60px;
+    background-color: #d0dbec;
+    text-align: center;
+    margin: 20px auto;
+}
+
+.user p {
+    display: inline-block;
+}
