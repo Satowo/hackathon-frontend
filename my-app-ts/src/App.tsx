@@ -3,8 +3,26 @@ import './App.css';
 import Form from './components/Form';
 import UsersDisplay from "./components/usersDisplay";
 import { fetchUsers } from "./utils/FetchUsers";
+import {LoginForm} from "./components/LoginForm";
+import { onAuthStateChanged } from "firebase/auth";
+import { fireAuth } from "./firebase";
 
 function App() {
+    // stateとしてログイン状態を管理する。ログインしていないときはnullになる。
+    const [loginUser, setLoginUser] = useState(fireAuth.currentUser);
+
+    // ログイン状態を監視して、stateをリアルタイムで更新する
+    onAuthStateChanged(fireAuth, user => {
+        setLoginUser(user);
+    });
+
+    return (
+        <>
+            <LoginForm />
+            {/* ログインしていないと見られないコンテンツは、loginUserがnullの場合表示しない */}
+            {loginUser ? <Contents /> : null}
+        </>
+    );
   //userの型定義
   type User = {
     id: string;
@@ -12,7 +30,7 @@ function App() {
     age: number;
   }
 
-  const initialURL = "http://localhost:8000/user"; //endpoint
+  const initialURL = "http://localhost:8080/user"; //endpoint
   const [loading, setLoading] = useState<Boolean>(true); //最初にloading出したいのでtrue
   const [usersData, setUsersData] = useState<User[]>([]);//userの全データをstateに設定
 
@@ -51,7 +69,7 @@ function App() {
 
     try {
       const res = await fetch(
-          "http://localhost:8000/user",
+          "http://localhost:8080/user",
           {
             method: "POST",
             headers: {
@@ -80,6 +98,7 @@ function App() {
         <header className='App-header'>
           <h2 className='header-string'>User Register</h2>
         </header>
+        <LoginForm/>
         <Form onSubmit={onSubmit}/>
         <div className='users-display'>
           {loading ? (
