@@ -116,7 +116,7 @@ const Register = () => {
                 onChange={(e) => setRegisterPassword(e.target.value)}
               />
             </div>
-            <button type={"submit"}>Sign Up</button>
+            <button type={"submit"} className="bg-blue-500">Sign Up</button>
             {/* ↓リンクを追加 */}
             <p>ログインは<Link to={`/login/`}>こちら</Link></p>
           </form>
