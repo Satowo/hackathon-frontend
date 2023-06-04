@@ -3,26 +3,13 @@ import './App.css';
 import Form from './components/Form';
 import UsersDisplay from "./components/usersDisplay";
 import { fetchUsers } from "./utils/FetchUsers";
-import {LoginForm} from "./components/LoginForm";
-import { onAuthStateChanged } from "firebase/auth";
-import { fireAuth } from "./firebase";
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Mypage from "./components/Mypage";
 
 function App() {
-    // stateとしてログイン状態を管理する。ログインしていないときはnullになる。
-    const [loginUser, setLoginUser] = useState(fireAuth.currentUser);
-
-    // ログイン状態を監視して、stateをリアルタイムで更新する
-    onAuthStateChanged(fireAuth, user => {
-        setLoginUser(user);
-    });
-
-    return (
-        <>
-            <LoginForm />
-            {/* ログインしていないと見られないコンテンツは、loginUserがnullの場合表示しない */}
-            {loginUser ? <Contents /> : null}
-        </>
-    );
   //userの型定義
   type User = {
     id: string;
@@ -94,11 +81,19 @@ function App() {
   };
 
   return (
-      <div className='App'>
+    <div className='App'>
         <header className='App-header'>
           <h2 className='header-string'>User Register</h2>
         </header>
-        <LoginForm/>
+        <div className="container">
+          <BrowserRouter>
+            <Routes>
+              <Route path={`/register/`} element={<Register />} />
+              <Route path={`/login/`} element={<Login />} />
+              <Route path={`/`} element={<Mypage />} />
+            </Routes>
+          </BrowserRouter>
+        </div>
         <Form onSubmit={onSubmit}/>
         <div className='users-display'>
           {loading ? (
