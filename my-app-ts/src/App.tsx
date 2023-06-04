@@ -22,9 +22,9 @@ function App() {
   const [usersData, setUsersData] = useState<User[]>([]);//userの全データをstateに設定
 
   //reactアプリ立ち上げ時にuserデータを取得
-  useEffect(() => {
+  /* useEffect(() => {
     fetchUsers_();
-  }, []);
+  }, []); */
 
   // すべてのuserデータを取得
   const fetchUsers_ = async () => {
