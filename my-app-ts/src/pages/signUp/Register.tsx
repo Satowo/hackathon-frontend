@@ -28,7 +28,7 @@ const Register = () => {
     });
   }, []);
 
-  //onSubmit時にPOSTリクエストを送りuserのデータを更新
+  //onSubmit時にPOSTリクエストを送りuserのデータを登録する
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
