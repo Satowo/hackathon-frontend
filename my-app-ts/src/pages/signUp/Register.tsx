@@ -19,7 +19,7 @@ const Register = () => {
   const [registerUserName, setRegisterUserName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [usersData, setUsersData] = useState<User[]>([]);//userの全データをstateに設定
+  /* const [usersData, setUsersData] = useState<User[]>([]);//userの全データをstateに設定 */
   const [user, setUser] = useState<any>(undefined);
 
   useEffect(() => {
@@ -55,6 +55,7 @@ const Register = () => {
     try {
       const res = await fetch(
           "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app/user",
+          /* "http://localhost:8080/user", */
           {
             method: "POST",
             headers: {
@@ -71,8 +72,8 @@ const Register = () => {
         throw Error(`Failed to fetch users: ${res.status}`);
       }
 
-      const usersData_: User[] = await res.json();
-      setUsersData(usersData_);
+      /* const usersData_: User[] = await res.json();
+      setUsersData(usersData_); */
       console.log("response is ...", res);
     } catch (err) {
       console.error(err);
