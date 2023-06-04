@@ -54,7 +54,7 @@ const Register = () => {
 
     try {
       const res = await fetch(
-          "http://localhost:8080/user",
+          "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app/user",
           {
             method: "POST",
             headers: {
