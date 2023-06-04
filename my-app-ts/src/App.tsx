@@ -3,6 +3,11 @@ import './App.css';
 import Form from './components/Form';
 import UsersDisplay from "./components/usersDisplay";
 import { fetchUsers } from "./utils/FetchUsers";
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Mypage from "./components/Mypage";
 
 function App() {
   //userの型定義
@@ -12,7 +17,7 @@ function App() {
     age: number;
   }
 
-  const initialURL = "http://localhost:8000/user"; //endpoint
+  const initialURL = "http://localhost:8080/user"; //endpoint
   const [loading, setLoading] = useState<Boolean>(true); //最初にloading出したいのでtrue
   const [usersData, setUsersData] = useState<User[]>([]);//userの全データをstateに設定
 
@@ -51,7 +56,7 @@ function App() {
 
     try {
       const res = await fetch(
-          "http://localhost:8000/user",
+          "http://localhost:8080/user",
           {
             method: "POST",
             headers: {
@@ -76,10 +81,19 @@ function App() {
   };
 
   return (
-      <div className='App'>
+    <div className='App'>
         <header className='App-header'>
           <h2 className='header-string'>User Register</h2>
         </header>
+        <div className="container">
+          <BrowserRouter>
+            <Routes>
+              <Route path={`/register/`} element={<Register />} />
+              <Route path={`/login/`} element={<Login />} />
+              <Route path={`/`} element={<Mypage />} />
+            </Routes>
+          </BrowserRouter>
+        </div>
         <Form onSubmit={onSubmit}/>
         <div className='users-display'>
           {loading ? (
