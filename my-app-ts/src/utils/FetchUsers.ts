@@ -1,7 +1,7 @@
 export const fetchUsers = async (url: string) =>  {
     try {
         const res = await fetch(
-            "http://localhost:8000/user",
+            "http://localhost:8080/user",
             {
                 method: "GET",
                 headers: {
