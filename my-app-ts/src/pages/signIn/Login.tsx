@@ -3,7 +3,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 /* 「Link」をimport↓ */
 import { Navigate, Link } from "react-router-dom";
 

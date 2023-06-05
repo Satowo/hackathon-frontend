@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import './App.css';
-import Form from './pages/Form';
-import UsersDisplay from "./pages/usersDisplay";
-import { fetchUsers } from "./utils/FetchUsers";
+import Form from './notespaces/Form';
+import UsersDisplay from "./notespaces/usersDisplay";
+import { fetchData } from "./utils/FetchData";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Register from "./pages/signUp/Register";
-import Login from "./pages/Login";
+import Login from "./pages/signIn/Login";
 import Mypage from "./pages/myPage/Mypage";
 
 function App() {
@@ -23,12 +23,12 @@ function App() {
 
   //reactアプリ立ち上げ時にuserデータを取得
   /* useEffect(() => {
-    fetchUsers_();
+    fetchData_();
   }, []); */
 
   // すべてのuserデータを取得
   const fetchUsers_ = async () => {
-    let res: User[] = await fetchUsers(initialURL);
+    let res: User[] = await fetchData(initialURL);
     setUsersData(res)
     setLoading(false);
   };
@@ -92,18 +92,7 @@ function App() {
           </BrowserRouter>
         </div>
         {/* <Form onSubmit={onSubmit}/> */}
-        {/* <div className='users-display'>
-          {loading ? (
-              <p className="loader">ロード中。。。</p>
-          ) : (
-              <div>
-                {usersData?.map((user: User) => {
-                  return <UsersDisplay user={user} />;
-                })}
-              </div>
-          )}
-        </div> */}
-      </div>
+    </div>
   );
 }
 

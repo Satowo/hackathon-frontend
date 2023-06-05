@@ -1,7 +1,7 @@
-export const fetchUsers = async (url: string) =>  {
+export const fetchData = async (url: string) =>  {
     try {
         const res = await fetch(
-            "http://localhost:8080/user",
+            url,
             {
                 method: "GET",
                 headers: {
