@@ -1,7 +1,7 @@
-export const fetchData = async (url: string) =>  {
+export const fetchData = async (url: string, queryParameter: string) =>  {
     try {
         const res = await fetch(
-            url,
+            `${url+queryParameter}`,
             {
                 method: "GET",
                 headers: {
