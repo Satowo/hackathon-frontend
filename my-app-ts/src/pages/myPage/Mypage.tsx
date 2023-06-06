@@ -42,10 +42,10 @@ const Mypage = () => {
 
   //はじめにuserがログインしているか確認、していればそのuser情報をuserに入れる
   useEffect(() => {
-    onAuthStateChanged(auth, (currentUser) => {
+    onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       console.log(user?.email)
-      let userInfoRes: User = fetchUserInfo(user?.email)
+      let userInfoRes: User = await fetchUserInfo(user?.email)
       setUserInfo(userInfoRes)
       setLoading(false);
     });
