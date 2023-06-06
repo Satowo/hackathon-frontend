@@ -14,7 +14,8 @@ export const fetchData = async (url: string, queryParameter: string) =>  {
         }
 
         console.log("response is ...", res);
-        return res.json()
+        const response = await res.json()
+        return response
     } catch (err) {
         console.error(err);
     }

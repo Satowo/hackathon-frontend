@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
-import MessageDisplay from "./channel1/messageDisplay";
+import MessageDisplay from "./components/messageDisplay";
 /* import MessageForm from "./channel1/messageForm"; */
-import {
-  useNavigate,
-  Navigate
-} from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { fetchData } from "../../utils/FetchData";
+import ChannelDisplay from "./components/channelDisplay";
 
 const Mypage = () => {
   type User = {
@@ -15,11 +13,6 @@ const Mypage = () => {
     userName: string;
     email: string;
     inChannels: string[];
-  }
-
-  type Channel = {
-    channelId: string;
-    channelName: string;
   }
 
   type Message = {
@@ -33,39 +26,53 @@ const Mypage = () => {
   const backEndURL = "http://localhost:8080"
   /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
-  const [user, setUser] = useState<any>(undefined);
+  const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>()
-  const [messagesData, setMessagesData] = useState<Message[]>([]);//messageの全データをstateに設定
-  const [loading, setLoading] = useState(true);//最初にloading出したいのでtrue
-  const [_loading, _setLoading] = useState(true);//最初にloading出したいのでtrue
+  const [messagesData, setMessagesData] = useState<Message[]>([]);   //messageの全データをstateに設定
+  const [loading, setLoading] = useState(true);                      //最初にloading出したいのでtrue
+  const [_loading, _setLoading] = useState(true);                    //最初にloading出したいのでtrue
 
 
   //はじめにuserがログインしているか確認、していればそのuser情報をuserに入れる
-  useEffect(() => {
+  useEffect(() =>  {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-    });
-    let userInfoRes: User =  fetchUserInfo(user?.email)
-      console.log(user?.email)
-      setUserInfo(userInfoRes)
       setLoading(false);
+      FetchUserInfo(backEndURL, currentUser?.email)
+    });
   }, []);
+
+  //ログインしているユーザーのemailからユーザー情報を取得する関数
+  const FetchUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
+    try {
+        const res = await fetch(
+            `${backEndURL+"/user?email="+email}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch users: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const _userInfo = await res.json()
+        setUserInfo(_userInfo)
+    } catch (err) {
+        console.error(err);
+    }
+};
 
   //これはチャンネルのmessageをはじめに取ってくる機能用、余裕があれば実装
  /*  useEffect(() => {
     fetchMessages(userInfo?.inChannels);
   }, []); */
 
-
-  //ログインしているユーザーのemailからユーザー情報を取得する関数
-  const fetchUserInfo = (email: string) => {
-    const queryParameter = `/user?email=${email}`
-    let userInfoRes: any = fetchData(backEndURL, queryParameter)
-    return userInfoRes
-  }
-
   const navigate = useNavigate();
-
+  
   const logout = async () => {
     await signOut(auth);
     navigate("/login/");
@@ -130,10 +137,14 @@ const Mypage = () => {
             <div className="my-page">
               <div className="side-bar">
                 <h1>マイページ</h1>
-                <div className="account-info">
-                  <p>{user?.email}</p>
+                <div className="userName">
+                  {userInfo?.userName}
                 </div>
+                <p className="email">{userInfo?.email}</p>
                 <div className="channels-display">
+                  {userInfo?.inChannels?.map((channelName: string) => {
+                    return <ChannelDisplay channelName={channelName} />;
+                  })}
                 </div>
               </div>
               <div className="main-display">
