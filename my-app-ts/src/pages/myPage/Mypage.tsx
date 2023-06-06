@@ -4,7 +4,6 @@ import { auth } from "../../firebase";
 import MessageDisplay from "./components/messageDisplay";
 /* import MessageForm from "./channel1/messageForm"; */
 import { useNavigate, Navigate } from "react-router-dom";
-import { fetchData } from "../../utils/FetchData";
 import ChannelDisplay from "./components/channelDisplay";
 
 const Mypage = () => {
@@ -12,8 +11,13 @@ const Mypage = () => {
     userId: string;
     userName: string;
     email: string;
-    inChannels: string[];
-  }
+    channels: Channel[];
+  };
+
+  type Channel = {
+    channelId: string;
+    channelName: string;
+  };
 
   type Message = {
     messageId: string;
@@ -21,13 +25,13 @@ const Mypage = () => {
     channelId: string;
     messageContent: string;
     edited: boolean
-  }
+  };
 
-  const backEndURL = "http://localhost:8080"
-  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
+  /* const backEndURL = "http://localhost:8080" */
+  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
   const [user, setUser] = useState<any>();
-  const [userInfo, setUserInfo] = useState<User>()
+  const [userInfo, setUserInfo] = useState<User>();
   const [messagesData, setMessagesData] = useState<Message[]>([]);   //messageの全データをstateに設定
   const [loading, setLoading] = useState(true);                      //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                    //最初にloading出したいのでtrue
@@ -38,12 +42,12 @@ const Mypage = () => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-      FetchUserInfo(backEndURL, currentUser?.email)
+      fetchUserInfo(backEndURL, currentUser?.email)
     });
   }, []);
 
   //ログインしているユーザーのemailからユーザー情報を取得する関数
-  const FetchUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
+  const fetchUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
     try {
         const res = await fetch(
             `${backEndURL+"/user?email="+email}`,
@@ -76,18 +80,44 @@ const Mypage = () => {
   const logout = async () => {
     await signOut(auth);
     navigate("/login/");
-  }
+  };
 
   //channelIdからそのチャンネル内のメッセージをすべて取得する関数
-  const fetchMessages = async (channelId: string) => {
+  /* const fetchMessages = async (channelId: string) => {
     const queryParameter = `/message?channelId=${channelId}`
     let res: Message[] = await fetchData(backEndURL, queryParameter);
     setMessagesData(res)
     _setLoading(false);
-  };
+  }; */
+
+  const getMessages = async (channelId: string) =>  {
+    try {
+        const res = await fetch(
+            `${backEndURL+"/message?channelId="+channelId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch users: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const messagesData = await res.json()
+        setMessagesData(messagesData)
+        _setLoading(false)
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+
 
   //onSubmit時にPOSTリクエストを送りuserのデータを更新
-  const onSubmit = async (e: React.FormEvent<HTMLFormElement>, messageContent:string) => {
+ /*  const onSubmit = async (e: React.FormEvent<HTMLFormElement>, channelId: string, messageContent:string) => {
     e.preventDefault();
 
     if (!messageContent) {
@@ -110,7 +140,7 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               userId: userInfo?.userId,
-              channelId: userInfo?.inChannels,
+              channelId: userInfo?.channels[0].channelId,
               messageContent: messageContent
             }),
           }
@@ -125,7 +155,7 @@ const Mypage = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }; */
 
   return (
     <div>
@@ -142,8 +172,8 @@ const Mypage = () => {
                 </div>
                 <p className="email">{userInfo?.email}</p>
                 <div className="channels-display">
-                  {userInfo?.inChannels?.map((channelName: string) => {
-                    return <ChannelDisplay channelName={channelName} />;
+                  {userInfo?.channels.map((channel: Channel) => {
+                    return <ChannelDisplay channel={channel} getMessages={getMessages}/>;
                   })}
                 </div>
               </div>
@@ -157,7 +187,7 @@ const Mypage = () => {
                   ) : (
                   <div>
                   {messagesData?.map((message: Message) => {
-                    return <MessageDisplay message={message} />;
+                    return <MessageDisplay message={message}/>;
                   })}
                   </div>
                   )}
