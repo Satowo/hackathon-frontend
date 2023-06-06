@@ -30,8 +30,8 @@ const Mypage = () => {
     edited: boolean
   }
 
-  /* const backEndURL = "http://localhost:8080" */
-  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
+  const backEndURL = "http://localhost:8080"
+  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
   const [user, setUser] = useState<any>(undefined);
   const [userInfo, setUserInfo] = useState<User>()
@@ -42,18 +42,18 @@ const Mypage = () => {
 
   //はじめにuserがログインしているか確認、していればそのuser情報をuserに入れる
   useEffect(() => {
-    onAuthStateChanged(auth, async (currentUser) => {
+    onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+    });
+    let userInfoRes: User =  fetchUserInfo(user?.email)
       console.log(user?.email)
-      let userInfoRes: User = await fetchUserInfo(user?.email)
       setUserInfo(userInfoRes)
       setLoading(false);
-    });
   }, []);
 
   //これはチャンネルのmessageをはじめに取ってくる機能用、余裕があれば実装
-  /* useEffect(() => {
-    fetchMessages();
+ /*  useEffect(() => {
+    fetchMessages(userInfo?.inChannels);
   }, []); */
 
 
