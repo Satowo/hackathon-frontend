@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import MessageDisplay from "./components/messageDisplay";
-/* import MessageForm from "./channel1/messageForm"; */
+import MessageForm from "./components/messageForm";
 import { useNavigate, Navigate } from "react-router-dom";
 import ChannelDisplay from "./components/channelDisplay";
 
@@ -32,12 +32,13 @@ const Mypage = () => {
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
-  const [messagesData, setMessagesData] = useState<Message[]>([]);   //messageの全データをstateに設定
-  const [loading, setLoading] = useState(true);                      //最初にloading出したいのでtrue
-  const [_loading, _setLoading] = useState(true);                    //最初にloading出したいのでtrue
+  const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
+  const [channelId, setChannelId] = useState<string | undefined>(userInfo?.channels[0].channelId); //userが今表示しているチャンネルのchannelIdを設定。デフォルトは0番目
+  const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
+  const [_loading, _setLoading] = useState(true);                                                  //最初にloading出したいのでtrue
 
 
-  //はじめにuserがログインしているか確認、していればそのuser情報をuserに入れる
+  //はじめにuserがログインしているか確認、していればそのuser情報をuserに入れる関数
   useEffect(() =>  {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -45,6 +46,15 @@ const Mypage = () => {
       fetchUserInfo(backEndURL, currentUser?.email)
     });
   }, []);
+
+  //他のURLへ移動する関数
+  const navigate = useNavigate();
+  
+  //logout時にログイン画面に飛ぶ関数
+  const logout = async () => {
+    await signOut(auth);
+    navigate("/login/");
+  };
 
   //ログインしているユーザーのemailからユーザー情報を取得する関数
   const fetchUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
@@ -68,28 +78,9 @@ const Mypage = () => {
     } catch (err) {
         console.error(err);
     }
-};
-
-  //これはチャンネルのmessageをはじめに取ってくる機能用、余裕があれば実装
- /*  useEffect(() => {
-    fetchMessages(userInfo?.inChannels);
-  }, []); */
-
-  const navigate = useNavigate();
-  
-  const logout = async () => {
-    await signOut(auth);
-    navigate("/login/");
   };
 
   //channelIdからそのチャンネル内のメッセージをすべて取得する関数
-  /* const fetchMessages = async (channelId: string) => {
-    const queryParameter = `/message?channelId=${channelId}`
-    let res: Message[] = await fetchData(backEndURL, queryParameter);
-    setMessagesData(res)
-    _setLoading(false);
-  }; */
-
   const getMessages = async (channelId: string) =>  {
     try {
         const res = await fetch(
@@ -106,29 +97,28 @@ const Mypage = () => {
         }
 
         console.log("response is ...", res);
-        const messagesData = await res.json()
-        setMessagesData(messagesData)
-        _setLoading(false)
+        const messagesData = await res.json();
+        setMessagesData(messagesData);
+        setChannelId(channelId);
+        _setLoading(false);
     } catch (err) {
         console.error(err);
     }
-};
-
-
+  };
 
   //onSubmit時にPOSTリクエストを送りuserのデータを更新
- /*  const onSubmit = async (e: React.FormEvent<HTMLFormElement>, channelId: string, messageContent:string) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>, messageContent:string) => {
     e.preventDefault();
 
     if (!messageContent) {
       alert("メッセージを入力してください");
       return;
-    }
+    };
 
     if (messageContent.length > 500) {
       alert("メッセージは500文字以内にしてください");
       return;
-    }
+    };
 
     try {
       const res = await fetch(
@@ -140,22 +130,22 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               userId: userInfo?.userId,
-              channelId: userInfo?.channels[0].channelId,
+              channelId: channelId,
               messageContent: messageContent
             }),
           }
       );
       if (!res.ok) {
         throw Error(`Failed to fetch users: ${res.status}`);
-      }
+      };
 
       const messagesData_: Message[] = await res.json();
       setMessagesData(messagesData_);
       console.log("response is ...", res);
     } catch (err) {
       console.error(err);
-    }
-  }; */
+    };
+  };
 
   return (
     <div>
@@ -164,37 +154,44 @@ const Mypage = () => {
           {!user ? (
             <Navigate to={`/login/`} />
           ) : (
-            <div className="my-page">
-              <div className="side-bar">
-                <h1>マイページ</h1>
-                <div className="userName">
-                  {userInfo?.userName}
-                </div>
-                <p className="email">{userInfo?.email}</p>
-                <div className="channels-display">
-                  {userInfo?.channels.map((channel: Channel) => {
-                    return <ChannelDisplay channel={channel} getMessages={getMessages}/>;
-                  })}
-                </div>
+          <div className="myPage static">
+            <div className="sideBar w-1/4 fixed bottom-0 left-0 top-0 bg-gray-200 px-4 py-8">
+              <h1 className="text-2xl font-bold mb-4">マイページ</h1>
+              <div className="userInfo mb-6">
+                <p className="text-lg font-semibold">{userInfo?.userName}</p>
+                <p className="text-sm text-gray-500">{userInfo?.email}</p>
               </div>
-              <div className="main-display">
-                <div className="channel-header">
-                  <button onClick={logout}>ログアウト</button>
-                </div>
-                <div className="messages-display">
-                  {_loading ? (
-                  <p className="loader">ロード中...</p>
-                  ) : (
-                  <div>
-                  {messagesData?.map((message: Message) => {
-                    return <MessageDisplay message={message}/>;
-                  })}
-                  </div>
-                  )}
-                </div>
-                {/* <MessageForm props={props}/> */}
+              <div className="logOut mb-6">
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg"
+                  onClick={logout}
+                >
+                  ログアウト
+                </button>
+              </div>
+              <div className="channelDisplay space-y-2">
+                {userInfo?.channels.map((channel: Channel) => (
+                  <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages} />
+                ))}
               </div>
             </div>
+            <div>
+              {_loading ? (
+                <p className="text-lg"></p>
+              ) : (
+              <div className="absolute right-0 w-3/4">
+                <div className="bg-white px-4 py-8 space-y-4 overflow-y-auto">
+                {messagesData?.map((message: Message) => (
+                  <MessageDisplay key={message.messageId} message={message} />
+                ))}
+                </div>
+              </div>
+              )}
+              {userInfo && (
+              <MessageForm function={onSubmit} userName={userInfo.userName} />
+            )}
+            </div>
+          </div>
           )}
         </div>
       )}

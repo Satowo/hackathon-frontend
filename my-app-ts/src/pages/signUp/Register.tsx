@@ -4,22 +4,12 @@ import {
   onAuthStateChanged
 } from "firebase/auth";
 import { auth } from "../../firebase";
-/* 「Link」をimport↓ */
 import { Navigate, Link } from "react-router-dom";
 
-
-
 const Register = () => {
-  type User = {
-    userName: string;
-    email: string;
-    password: string;
-  }
-
   const [registerUserName, setRegisterUserName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  /* const [usersData, setUsersData] = useState<User[]>([]);//userの全データをstateに設定 */
   const [user, setUser] = useState<any>(undefined);
 
   useEffect(() => {
@@ -28,9 +18,18 @@ const Register = () => {
     });
   }, []);
 
-  //onSubmit時にPOSTリクエストを送りuserのデータを登録する
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!registerUserName) {
+      alert("名前を入力してください");
+      return;
+    }
+
+    if (registerUserName.length > 10) {
+      alert("名前は10文字以下にしてください");
+      return;
+    }
 
     try {
       await createUserWithEmailAndPassword(
@@ -38,61 +37,42 @@ const Register = () => {
         registerEmail,
         registerPassword
       );
-    } catch(error) {
-      alert("正しく入力してください");
-    }
 
-    if (!registerUserName) {
-      alert("Please enter name");
-      return;
-    }
+      const res = await fetch("https://hackathon-backend-ipy2xx7l4q-uc.a.run.app/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userName: registerUserName,
+          email: registerEmail,
+          password: registerPassword
+        }),
+      });
 
-    if (registerUserName.length > 10) {
-      alert("Please enter a name shorter than 10 characters");
-      return;
-    }
-
-    try {
-      const res = await fetch(
-          "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app/user",
-          /* "http://localhost:8080/user", */
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              userName: registerUserName,
-              email: registerEmail,
-              password: registerPassword
-            }),
-          }
-      );
       if (!res.ok) {
         throw Error(`Failed to fetch users: ${res.status}`);
       }
 
-      /* const usersData_: User[] = await res.json();
-      setUsersData(usersData_); */
       console.log("response is ...", res);
     } catch (err) {
       console.error(err);
+      alert("正しく入力してください");
     }
   };
 
-
-
   return (
-    <>
+    <div className="flex items-center justify-center h-screen">
       {user ? (
         <Navigate to={`/`} />
       ) : (
-        <>
-          <h1>新規登録</h1>
-          <form onSubmit={handleSubmit}>
-          <div>
-              <label>ユーザーネーム</label>
+        <div className="max-w-md p-6 bg-white rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold mb-6">新規登録</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block mb-1">ユーザーネーム</label>
               <input
+                className="w-full border rounded-lg px-4 py-2"
                 name="user_name"
                 type="text"
                 value={registerUserName}
@@ -100,8 +80,9 @@ const Register = () => {
               />
             </div>
             <div>
-              <label>メールアドレス</label>
+              <label className="block mb-1">メールアドレス</label>
               <input
+                className="w-full border rounded-lg px-4 py-2"
                 name="email"
                 type="email"
                 value={registerEmail}
@@ -109,21 +90,28 @@ const Register = () => {
               />
             </div>
             <div>
-              <label>パスワード</label>
+              <label className="block mb-1">パスワード</label>
               <input
+                className="w-full border rounded-lg px-4 py-2"
                 name="password"
                 type="password"
                 value={registerPassword}
                 onChange={(e) => setRegisterPassword(e.target.value)}
               />
             </div>
-            <button type={"submit"} className="bg-blue-500">Sign Up</button>
-            {/* ↓リンクを追加 */}
-            <p>ログインは<Link to={`/login/`}>こちら</Link></p>
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg"
+            >
+              Sign Up
+            </button>
+            <p className="text-center">
+              ログインは<Link to={`/login/`} className="text-blue-500">こちら</Link>
+            </p>
           </form>
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 
