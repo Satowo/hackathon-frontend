@@ -20,10 +20,10 @@ const ChannelDisplay: React.FC<ChannelDisplayProps> = ({channel, getMessages,}) 
       <div className="channel w-full hover:bg-opacity-50">
         <button
           type="button"
-          className="bg-purple-900 hover:bg-purple-500 text-gray-300 font-semibold py-2 rounded-lg"
+          className="bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 font-semibold py-2 rounded-lg"
           onClick={onClick}
         >
-          {channel.channelName}
+          {"#  "+channel.channelName}
         </button>
       </div>
     </div>
