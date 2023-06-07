@@ -16,16 +16,17 @@ const ChannelDisplay: React.FC<ChannelDisplayProps> = ({channel, getMessages,}) 
   };
 
   return (
-    <div className="channelDisplay flex">
-      <div className="channel w-full hover:bg-opacity-50">
+    <div className="w-full">
         <button
           type="button"
-          className="bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 font-semibold py-2 rounded-lg"
+          className="w-full bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 font-semibold rounded-lg"
           onClick={onClick}
         >
-          {"#  "+channel.channelName}
+          <div className="flex items-center">
+            <p className="w-1/4 text-xl">#</p>
+            <p className="w-3/4">{channel.channelName}</p>
+          </div>
         </button>
-      </div>
     </div>
   );
 };

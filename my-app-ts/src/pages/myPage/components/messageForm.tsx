@@ -1,4 +1,6 @@
 import React, { useState, useEffect} from "react";
+import {FaUser} from "react-icons/fa";
+import {MdSend} from "react-icons/md";
 
 type MessageFormProps = {
     onSubmit: (e: React.FormEvent<HTMLFormElement>, messageContent: string) => Promise<void>;
@@ -28,26 +30,22 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
 
     if (defaultMessage==""){
         return (
-            <form onSubmit={submit} className="w-3/4 h-1/3 fixed bottom-0 right-0 p-4 bg-gray-200 border rounded-lg">
-                <div className="flex items-center mt-2 ml-3">
-                    <img className="w-12 h-11 rounded-full mr-2" src="https://knsoza1.com/wp-content/uploads/2020/07/8d27ad3552fd86901f4976429ad22ce2.png" alt="" />
-                    <p className="text-lg font-bold">{userName}</p>
+            <form onSubmit={submit} className="w-3/4 h-1/4 fixed bottom-0 right-0 px-4 pt-4 pb-8 bg-gray-200 border border-gray-200 rounded-lg">
+                <div className="flex space-x-3 border border-gray-200">
+                    <div className="items-center justify-center text-purple-800 text-4xl"><FaUser/></div>
+                    <p className="text-xl font-bold">{userName}</p>
                 </div>
-                <input
-                    className="border rounded-lg p-4 mb-2" 
+                <textarea
+                    className="border rounded-lg p-3" 
                     placeholder="メッセージを入力"
-                    type="text"
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
-                ></input>
-                <button type={"submit"} className="bg-green-700 hover:bg-opacity-80 text-white font-semibold py-2 px-4 rounded-lg mb-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-mail-forward" width="36" height="30" viewBox="0 0 24 22" strokeWidth="1.5" stroke="#ffffff" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M12 18h-7a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5" />
-                        <path d="M3 6l9 6l9 -6" />
-                        <path d="M15 18h6" />
-                        <path d="M18 15l3 3l-3 3" />
-                    </svg>
+                ></textarea>
+                <button type={"submit"} className="w-20 h-10 fixed right-5 bg-green-700 hover:bg-opacity-80 text-white font-semibold rounded-lg">
+                    <div className="flex items-center justify-center space-x-2">
+                        <MdSend/>
+                        <p>送信</p>
+                    </div>
                 </button>
             </form>
         );
@@ -55,26 +53,22 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
 
     else {
         return (
-            <form onSubmit={submitEdit} className="w-3/4 h-1/3 fixed bottom-0 right-0 p-4 bg-gray-200 border rounded-lg">
-                <div className="flex items-center mt-2 ml-3">
-                    <img className="w-12 h-11 rounded-full mr-2" src="https://knsoza1.com/wp-content/uploads/2020/07/8d27ad3552fd86901f4976429ad22ce2.png" alt="" />
-                    <p className="text-lg font-bold">{userName}</p>
+            <form onSubmit={submitEdit} className="w-3/4 h-1/4 fixed bottom-0 right-0 px-4 pt-4 pb-8 bg-gray-200 border border-gray-200 rounded-lg">
+                <div className="flex space-x-3 border border-gray-200">
+                    <div className="items-center justify-center text-purple-800 text-4xl"><FaUser/></div>
+                    <p className="text-xl font-bold">{userName}</p>
                 </div>
-                <input
-                    className="border rounded-lg p-4 mb-2" 
+                <textarea
+                    className="border rounded-lg p-3" 
                     placeholder="メッセージを入力"
-                    type="text"
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
-                ></input>
-                <button type={"submit"} className="bg-green-700 hover:bg-opacity-80 text-white font-semibold py-2 px-4 rounded-lg mb-5">
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-mail-forward" width="36" height="30" viewBox="0 0 24 22" strokeWidth="1.5" stroke="#ffffff" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M12 18h-7a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7.5" />
-                        <path d="M3 6l9 6l9 -6" />
-                        <path d="M15 18h6" />
-                        <path d="M18 15l3 3l-3 3" />
-                    </svg>
+                ></textarea>
+                <button type={"submit"} className="w-20 h-10 fixed right-5 bg-green-700 hover:bg-opacity-80 text-white font-semibold rounded-lg">
+                    <div className="flex items-center justify-center space-x-2">
+                        <MdSend/>
+                        <p>送信</p>
+                    </div>
                 </button>
             </form>
         );
