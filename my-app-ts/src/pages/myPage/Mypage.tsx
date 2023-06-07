@@ -27,8 +27,8 @@ const Mypage = () => {
     edited: boolean
   };
 
-  /* const backEndURL = "http://localhost:8080" */
-  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
+  const backEndURL = "http://localhost:8080"
+  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
@@ -231,8 +231,8 @@ const Mypage = () => {
               {_loading ? (
                 <p className="text-lg"></p>
               ) : (
-              <div className="absolute right-0 w-3/4">
-                <div className="bg-white px-4 py-8 space-y-4 overflow-y-auto">
+              <div className="absolute flex right-0 w-3/4 h-2/3 overflow-y-auto">
+                <div className="px-4 py-8 space-y-4">
                 {messagesData?.map((message: Message) => (
                   <MessageDisplay key={message.messageId} message={message} onClickEdit={onClickEdit}/>
                 ))}
