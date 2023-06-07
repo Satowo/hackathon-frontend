@@ -33,6 +33,8 @@ const Mypage = () => {
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
+  const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容をstateに設定
+  const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージをstateに設定。
   const [channelId, setChannelId] = useState<string | undefined>(userInfo?.channels[0].channelId); //userが今表示しているチャンネルのchannelIdを設定。デフォルトは0番目
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                                                  //最初にloading出したいのでtrue
@@ -106,7 +108,7 @@ const Mypage = () => {
     }
   };
 
-  //onSubmit時にPOSTリクエストを送りuserのデータを更新
+  //onSubmit時にPOSTリクエストを送りmessagesのデータを更新
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>, messageContent:string) => {
     e.preventDefault();
 
@@ -141,10 +143,60 @@ const Mypage = () => {
 
       const messagesData_: Message[] = await res.json();
       setMessagesData(messagesData_);
+      setDefaultMessage("");
       console.log("response is ...", res);
     } catch (err) {
       console.error(err);
     };
+  };
+
+  //onSubmitEdit時にPOSTリクエストを送りmessageを編集してmessagesのデータを更新
+  const onSubmitEdit = async (e: React.FormEvent<HTMLFormElement>, messageContent:string) => {
+    e.preventDefault();
+
+    if (!messageContent) {
+      alert("メッセージを入力してください");
+      return;
+    };
+
+    if (messageContent.length > 500) {
+      alert("メッセージは500文字以内にしてください");
+      return;
+    };
+
+    try {
+      const res = await fetch(
+          backEndURL+"/message_edit",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messageId: message?.messageId,
+              channelId: channelId,
+              messageContent: messageContent
+            }),
+          }
+      );
+      if (!res.ok) {
+        throw Error(`Failed to fetch users: ${res.status}`);
+      };
+
+      const messagesData_: Message[] = await res.json();
+      setMessagesData(messagesData_);
+      setDefaultMessage("");
+      console.log("response is ...", res);
+    } catch (err) {
+      console.error(err);
+    };
+  };
+
+  //メッセージの編集ボタンを押すとmessageIdのstateをそのメッセージのものに変更する関数
+  const onClickEdit = (message: Message) => {
+    setMessage(message);
+    setDefaultMessage(message.messageContent)
+    console.log(defaultMessage)
   };
 
   return (
@@ -171,7 +223,7 @@ const Mypage = () => {
               </div>
               <div className="channelDisplay space-y-2">
                 {userInfo?.channels.map((channel: Channel) => (
-                  <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages} />
+                  <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages}/>
                 ))}
               </div>
             </div>
@@ -182,13 +234,13 @@ const Mypage = () => {
               <div className="absolute right-0 w-3/4">
                 <div className="bg-white px-4 py-8 space-y-4 overflow-y-auto">
                 {messagesData?.map((message: Message) => (
-                  <MessageDisplay key={message.messageId} message={message} />
+                  <MessageDisplay key={message.messageId} message={message} onClickEdit={onClickEdit}/>
                 ))}
                 </div>
               </div>
               )}
               {userInfo && (
-              <MessageForm function={onSubmit} userName={userInfo.userName} />
+              <MessageForm onSubmit={onSubmit} onSubmitEdit={onSubmitEdit} userName={userInfo.userName} defaultMessage={defaultMessage} />
             )}
             </div>
           </div>

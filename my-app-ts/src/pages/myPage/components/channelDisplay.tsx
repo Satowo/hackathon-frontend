@@ -10,10 +10,7 @@ type ChannelDisplayProps = {
   getMessages: (channelId: string) => Promise<void>;
 };
 
-const ChannelDisplay: React.FC<ChannelDisplayProps> = ({
-  channel,
-  getMessages,
-}) => {
+const ChannelDisplay: React.FC<ChannelDisplayProps> = ({channel, getMessages,}) => {
   const onClick = () => {
     getMessages(channel.channelId);
   };
