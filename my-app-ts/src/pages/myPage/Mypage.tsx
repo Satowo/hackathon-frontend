@@ -6,6 +6,9 @@ import MessageForm from "./components/messageForm";
 import { useNavigate, Navigate } from "react-router-dom";
 import ChannelDisplay from "./components/channelDisplay";
 import {HiOutlineLogout} from "react-icons/hi";
+import {FaUser} from "react-icons/fa";
+import {BiPlus} from "react-icons/bi";
+
 
 const Mypage = () => {
   type User = {
@@ -34,6 +37,7 @@ const Mypage = () => {
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
+  const [channelsDisplay, setChannelsDisplay] = useState(true);                                    //チャンネル一覧を表示しているかどうかをstateに設定
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容をstateに設定
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージをstateに設定。
@@ -49,7 +53,7 @@ const Mypage = () => {
       setLoading(false);
       console.log(channelId);
       getMessages(channelId);
-      fetchUserInfo(backEndURL, currentUser?.email).then(() => {
+      getUserInfo(backEndURL, currentUser?.email).then(() => {
         getMessages(channelId)
       });
     });
@@ -65,7 +69,7 @@ const Mypage = () => {
   };
 
   //ログインしているユーザーのemailからユーザー情報を取得する関数
-  const fetchUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
+  const getUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
     try {
         const res = await fetch(
             `${backEndURL+"/user?email="+email}`,
@@ -235,6 +239,11 @@ const Mypage = () => {
     };
   };
 
+  //自分が入っているチャンネルを取得する関数
+  const _setChannelsDisplay: React.MouseEventHandler<HTMLButtonElement> | undefined = () => {
+    setChannelsDisplay(!channelsDisplay);
+  };
+
   return (
     <div>
       {!loading && (
@@ -244,31 +253,49 @@ const Mypage = () => {
           ) : (
           <div className="myPage static">
             <div className="sideBar w-1/4 fixed bottom-0 left-0 top-0 bg-purple-900 py-8">
-              <h1 className="text-2xl text-white font-bold mb-4 border-b border-purple-700">UTokyo Tech Club</h1>
-              <div className="userInfo mb-6">
-                <p className="text-lg font-semibold text-gray-300">{userInfo?.userName}</p>
-                <p className="text-sm text-gray-500">{userInfo?.email}</p>
-              </div>
-              <div className="channelDisplay space-y-2 mb-6">
-                {userInfo?.channels.map((channel: Channel) => (
-                  <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages}/>
-                ))}
-              </div>
-              <div className="logOut mb-8">
-                <button
-                  className="bg-purple-900 hover:bg-purple-300 text-white text-2xl font-bold py-2 px-4 rounded-lg"
-                  onClick={logout}
-                >
-                  <HiOutlineLogout/>
-                </button>
+              <h1 className="text-2xl text-white font-bold mb-3 pb-4 border-b border-purple-700">UTokyo Tech Club</h1>
+              <div className="flex flex-col items-center">
+                <div className="flex w-3/4 h-20 mb-3 border border-purple-700">
+                  <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl"><FaUser/></div>
+                  <p className="flex-1 flex items-center justify-center text-xl font-semibold text-gray-300">{userInfo?.userName}</p>
+                </div>
+                <div className="flex w-3/4 h-10 mb-3 space-x-2 border border-purple-700">
+                  <button type="button" className="flex w-2/3 flex items-center justify-center 
+                    bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
+                    font-semibold rounded-lg" onClick={_setChannelsDisplay}
+                    >
+                    チャンネル
+                  </button>
+                  <button type="button" className="flex w-1/3 flex items-center justify-center 
+                    bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
+                    text-2xl font-semibold rounded-lg"
+                    >
+                    <BiPlus/>
+                  </button>
+                </div>
+                {!channelsDisplay ? null : (
+                  <div className="w-3/4 space-y-2 mb-6 border border-purple-700">
+                    {userInfo?.channels.map((channel: Channel) => (
+                      <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages}/>
+                    ))}
+                  </div>
+                )}
+                <div className="logOut mb-8">
+                  <button
+                    className="bg-purple-900 hover:bg-purple-300 text-white text-2xl font-bold py-2 px-4 rounded-lg"
+                    onClick={logout}
+                  >
+                    <HiOutlineLogout/>
+                  </button>
+                </div>
               </div>
             </div>
             <div>
               {_loading ? (
                 <p className="text-lg"></p>
               ) : (
-              <div className="absolute flex right-0 w-3/4 h-2/3 overflow-y-auto">
-                <div className="px-4 py-8 space-y-4">
+              <div className="absolute flex right-0 w-3/4 h-3/4 overflow-y-auto border border-gray-300">
+                <div>
                 {messagesData?.map((message: Message) => (
                   <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
                 ))}
