@@ -27,8 +27,8 @@ const Mypage = () => {
     edited: boolean
   };
 
-  /* const backEndURL = "http://localhost:8080" */
-  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
+  const backEndURL = "http://localhost:8080"
+  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
@@ -45,9 +45,11 @@ const Mypage = () => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+      console.log(channelId);
+      getMessages(channelId);
       fetchUserInfo(backEndURL, currentUser?.email).then(() => {
-        getMessages(userInfo?.channels[0].channelId
-        )})
+        getMessages(channelId)
+      });
     });
   }, []);
 
@@ -79,6 +81,7 @@ const Mypage = () => {
         console.log("response is ...", res);
         const _userInfo = await res.json()
         setUserInfo(_userInfo)
+        return _userInfo
     } catch (err) {
         console.error(err);
     }
@@ -222,10 +225,10 @@ const Mypage = () => {
               </div>
               <div className="logOut mb-8">
                 <button
-                  className="bg-red-400 hover:bg-opacity-50 text-white font-semibold py-2 px-4 rounded-lg"
+                  className="bg-gray-300 hover:bg-purple-300 text-white font-semibold py-2 px-4 rounded-lg"
                   onClick={logout}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-logout" width="30" height="30" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-logout" width="25" height="30" viewBox="0 0 20 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
                     <path d="M9 12h12l-3 -3" />
