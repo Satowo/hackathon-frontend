@@ -4,7 +4,6 @@ import {
   onAuthStateChanged
 } from "firebase/auth";
 import { auth } from "../../firebase";
-/* 「Link」をimport↓ */
 import { Navigate, Link } from "react-router-dom";
 
 const Login = () => {
@@ -20,13 +19,12 @@ const Login = () => {
         loginEmail,
         loginPassword
       );
-    } catch(error) {
+    } catch (error) {
       alert("メールアドレスまたはパスワードが間違っています");
     }
   };
 
   const [user, setUser] = useState<any>(undefined);
-
 
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
@@ -35,38 +33,43 @@ const Login = () => {
   });
 
   return (
-    <>
+    <div className="flex items-center justify-center h-screen">
       {user ? (
         <Navigate to={`/`} />
       ) : (
-        <>
-          <h1>ログインページ</h1>
-          <form onSubmit={handleSubmit}>
+        <div className="max-w-md p-6 bg-white rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold mb-6">ログインページ</h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label>メールアドレス</label>
+              <label className="block mb-1">メールアドレス</label>
               <input
-               name="email"
-               type="email"
-               value={loginEmail}
-               onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full border rounded-lg px-4 py-2"
+                name="email"
+                type="email"
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
               />
             </div>
             <div>
-              <label>パスワード</label>
+              <label className="block mb-1">パスワード</label>
               <input
+                className="w-full border rounded-lg px-4 py-2"
                 name="password"
                 type="password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
               />
             </div>
-            <button>ログイン</button>
-            {/* ↓リンクを追加 */}
-            <p>新規登録は<Link to={`/register/`}>こちら</Link></p>
+            <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg">
+              ログイン
+            </button>
+            <p className="text-center">
+              新規登録は<Link to={`/register/`} className="text-blue-500">こちら</Link>
+            </p>
           </form>
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 

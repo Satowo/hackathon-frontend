@@ -6,10 +6,7 @@ import Mypage from "./pages/myPage/Mypage";
 
 function App() {
   return (
-    <div className='App'>
-        <header className='App-header'>
-        </header>
-        <div className="container">
+    <div className='App h-screen w-screen'>
           <BrowserRouter>
             <Routes>
               <Route path={`/register/`} element={<Register />} />
@@ -17,8 +14,6 @@ function App() {
               <Route path={`/`} element={<Mypage />} />
             </Routes>
           </BrowserRouter>
-        </div>
-        {/* <Form onSubmit={onSubmit}/> */}
     </div>
   );
 }
