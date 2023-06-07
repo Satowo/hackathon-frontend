@@ -5,6 +5,7 @@ import MessageDisplay from "./components/messageDisplay";
 import MessageForm from "./components/messageForm";
 import { useNavigate, Navigate } from "react-router-dom";
 import ChannelDisplay from "./components/channelDisplay";
+import {HiOutlineLogout} from "react-icons/hi";
 
 const Mypage = () => {
   type User = {
@@ -21,14 +22,15 @@ const Mypage = () => {
 
   type Message = {
     messageId: string;
+    userId:string;
     userName: string;
     channelId: string;
     messageContent: string;
     edited: boolean
   };
 
-  const backEndURL = "http://localhost:8080"
-  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
+  /* const backEndURL = "http://localhost:8080" */
+  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
@@ -75,7 +77,7 @@ const Mypage = () => {
             }
         );
         if (!res.ok) {
-            throw Error(`Failed to fetch users: ${res.status}`);
+            throw Error(`Failed to fetch userInfo: ${res.status}`);
         }
 
         console.log("response is ...", res);
@@ -100,7 +102,7 @@ const Mypage = () => {
             }
         );
         if (!res.ok) {
-            throw Error(`Failed to fetch users: ${res.status}`);
+            throw Error(`Failed to fetch messages: ${res.status}`);
         }
 
         console.log("response is ...", res);
@@ -143,7 +145,7 @@ const Mypage = () => {
           }
       );
       if (!res.ok) {
-        throw Error(`Failed to fetch users: ${res.status}`);
+        throw Error(`Failed to fetch messages: ${res.status}`);
       };
 
       const messagesData_: Message[] = await res.json();
@@ -185,7 +187,7 @@ const Mypage = () => {
           }
       );
       if (!res.ok) {
-        throw Error(`Failed to fetch users: ${res.status}`);
+        throw Error(`Failed to fetch messages: ${res.status}`);
       };
 
       const messagesData_: Message[] = await res.json();
@@ -202,6 +204,35 @@ const Mypage = () => {
     setMessage(message);
     setDefaultMessage(message.messageContent)
     console.log(defaultMessage)
+  };
+
+  //メッセージのゴミ箱ボタンを押して削除するを選択するとそのメッセージを削除する関数
+  const onClickDelete = async (message: Message) => {
+    try {
+      const res = await fetch(
+          backEndURL+"/message_delete",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messageId: message?.messageId,
+              channelId: channelId,
+            }),
+          }
+      );
+      if (!res.ok) {
+        throw Error(`Failed to fetch messages: ${res.status}`);
+      };
+
+      const messagesData_: Message[] = await res.json();
+      setMessagesData(messagesData_);
+      setDefaultMessage("");
+      console.log("response is ...", res);
+    } catch (err) {
+      console.error(err);
+    };
   };
 
   return (
@@ -225,15 +256,10 @@ const Mypage = () => {
               </div>
               <div className="logOut mb-8">
                 <button
-                  className="bg-gray-300 hover:bg-purple-300 text-white font-semibold py-2 px-4 rounded-lg"
+                  className="bg-purple-900 hover:bg-purple-300 text-white text-2xl font-bold py-2 px-4 rounded-lg"
                   onClick={logout}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-logout" width="25" height="30" viewBox="0 0 20 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                    <path d="M9 12h12l-3 -3" />
-                    <path d="M18 15l3 -3" />
-                  </svg>
+                  <HiOutlineLogout/>
                 </button>
               </div>
             </div>
@@ -244,7 +270,7 @@ const Mypage = () => {
               <div className="absolute flex right-0 w-3/4 h-2/3 overflow-y-auto">
                 <div className="px-4 py-8 space-y-4">
                 {messagesData?.map((message: Message) => (
-                  <MessageDisplay key={message.messageId} message={message} onClickEdit={onClickEdit}/>
+                  <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
                 ))}
                 </div>
               </div>
