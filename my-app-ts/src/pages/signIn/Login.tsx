@@ -33,12 +33,12 @@ const Login = () => {
   });
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen bg-purple-900">
       {user ? (
         <Navigate to={`/`} />
       ) : (
-        <div className="max-w-md p-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-6">ログインページ</h1>
+        <div className="max-w-2xl p-6 bg-white rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold mb-6">ログイン</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block mb-1">メールアドレス</label>
@@ -64,7 +64,7 @@ const Login = () => {
               ログイン
             </button>
             <p className="text-center">
-              新規登録は<Link to={`/register/`} className="text-blue-500">こちら</Link>
+              新規登録は<Link to={`/register/`} className="text-blue-500 hover:text-blue-300">こちら</Link>
             </p>
           </form>
         </div>

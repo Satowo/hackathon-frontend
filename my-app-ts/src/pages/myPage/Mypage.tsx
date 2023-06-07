@@ -45,7 +45,9 @@ const Mypage = () => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-      fetchUserInfo(backEndURL, currentUser?.email)
+      fetchUserInfo(backEndURL, currentUser?.email).then(() => {
+        getMessages(userInfo?.channels[0].channelId
+        )})
     });
   }, []);
 
@@ -57,7 +59,7 @@ const Mypage = () => {
     await signOut(auth);
     navigate("/login/");
   };
-
+  
   //ログインしているユーザーのemailからユーザー情報を取得する関数
   const fetchUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
     try {
@@ -83,7 +85,7 @@ const Mypage = () => {
   };
 
   //channelIdからそのチャンネル内のメッセージをすべて取得する関数
-  const getMessages = async (channelId: string) =>  {
+  const getMessages = async (channelId: string|undefined) =>  {
     try {
         const res = await fetch(
             `${backEndURL+"/message?channelId="+channelId}`,
@@ -207,24 +209,29 @@ const Mypage = () => {
             <Navigate to={`/login/`} />
           ) : (
           <div className="myPage static">
-            <div className="sideBar w-1/4 fixed bottom-0 left-0 top-0 bg-gray-200 px-4 py-8">
-              <h1 className="text-2xl font-bold mb-4">マイページ</h1>
+            <div className="sideBar w-1/4 fixed bottom-0 left-0 top-0 bg-purple-900 py-8">
+              <h1 className="text-2xl text-white font-bold mb-4 border-b border-purple-700">UTokyo Tech Club</h1>
               <div className="userInfo mb-6">
-                <p className="text-lg font-semibold">{userInfo?.userName}</p>
+                <p className="text-lg font-semibold text-gray-300">{userInfo?.userName}</p>
                 <p className="text-sm text-gray-500">{userInfo?.email}</p>
               </div>
-              <div className="logOut mb-6">
-                <button
-                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg"
-                  onClick={logout}
-                >
-                  ログアウト
-                </button>
-              </div>
-              <div className="channelDisplay space-y-2">
+              <div className="channelDisplay space-y-2 mb-6">
                 {userInfo?.channels.map((channel: Channel) => (
                   <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages}/>
                 ))}
+              </div>
+              <div className="logOut mb-8">
+                <button
+                  className="bg-red-400 hover:bg-opacity-50 text-white font-semibold py-2 px-4 rounded-lg"
+                  onClick={logout}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-logout" width="30" height="30" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                    <path d="M9 12h12l-3 -3" />
+                    <path d="M18 15l3 -3" />
+                  </svg>
+                </button>
               </div>
             </div>
             <div>

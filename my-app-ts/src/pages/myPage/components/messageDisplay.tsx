@@ -27,8 +27,9 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ message, onClickEdit}) 
             alt=""
           />
         </div>
-        <div className="relative bg-gray-200 rounded-lg p-2 m-2">
+        <div className="bg-gray-200 rounded-lg p-2 m-2 flex items-center">
           <p className="font-bold">{message.userName}</p>
+          <p>{message.messageContent}{!message.edited ? "" : "（編集済み）" }</p>
           <button type="button" className="" onClick={onClick}>
             <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-edit" width="25" height="25" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
@@ -37,7 +38,6 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ message, onClickEdit}) 
               <path d="M16 5l3 3" />
             </svg>
           </button>
-          <p>{message.messageContent}{!message.edited ? "" : "（編集済み）" }</p>
         </div>
     </div>
   );

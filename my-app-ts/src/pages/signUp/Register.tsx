@@ -62,11 +62,11 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen bg-purple-900">
       {user ? (
         <Navigate to={`/`} />
       ) : (
-        <div className="max-w-md p-6 bg-white rounded-lg shadow-md">
+        <div className="max-w-md p-6 bg-white rounded-lg shadow-md ">
           <h1 className="text-2xl font-bold mb-6">新規登録</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -106,7 +106,7 @@ const Register = () => {
               Sign Up
             </button>
             <p className="text-center">
-              ログインは<Link to={`/login/`} className="text-blue-500">こちら</Link>
+              ログインは<Link to={`/login/`} className="text-blue-500 hover:text-blue-300">こちら</Link>
             </p>
           </form>
         </div>

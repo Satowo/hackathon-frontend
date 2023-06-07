@@ -28,7 +28,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
 
     if (defaultMessage==""){
         return (
-            <form onSubmit={submit} className="w-3/4 h-1/3 fixed bottom-0 right-0 bg-gray-200 border rounded-lg">
+            <form onSubmit={submit} className="w-3/4 h-1/3 fixed bottom-0 right-0 p-4 bg-gray-200 border rounded-lg">
                 <div className="flex items-center mt-2 ml-3">
                     <img className="w-12 h-11 rounded-full mr-2" src="https://knsoza1.com/wp-content/uploads/2020/07/8d27ad3552fd86901f4976429ad22ce2.png" alt="" />
                     <p className="text-lg font-bold">{userName}</p>
