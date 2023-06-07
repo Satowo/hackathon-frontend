@@ -119,7 +119,7 @@ const Mypage = () => {
     }
   };
 
-  //onSubmit時にPOSTリクエストを送りmessagesのデータを更新
+  //onSubmit時にPOSTリクエストを送りmessagesのデータを更新する関数
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>, messageContent:string) => {
     e.preventDefault();
 
@@ -315,3 +315,4 @@ const Mypage = () => {
 };
 
 export default Mypage;
+
