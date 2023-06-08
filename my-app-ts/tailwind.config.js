@@ -9,3 +9,16 @@ module.exports = {
   plugins: [],
 }
 
+/* module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        'purple-base': '#8B5FBF',
+        'purple-mid': '#9F76C0',
+        'purple-dark': '#B48ECA',
+      },
+    },
+  },
+  variants: {},
+  plugins: [],
+}; */

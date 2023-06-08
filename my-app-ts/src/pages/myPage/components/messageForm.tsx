@@ -51,7 +51,8 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
                 ></textarea>
-                <button type={"submit"} className="w-20 h-10 fixed right-5 bg-green-700 hover:bg-opacity-80 text-white font-semibold rounded-lg">
+                <button type={"submit"} className="w-20 h-10 fixed right-5 bg-green-700 
+                hover:bg-opacity-80 text-white font-semibold rounded-lg shadow-xl">
                     <div className="flex items-center justify-center space-x-2">
                         <MdSend/>
                         <p>送信</p>
@@ -77,11 +78,12 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
                 ></textarea>
-                <div className="flex items-center space-x-5">
+                <div className="flex items-center space-x-5 fixed right-5">
                     <button type="button" className="rounded-lg text-xl text-gray-700 hover:bg-gray-500 hover:bg-opacity-50" onClick={onClick}>
                         <TbEditOff/>
                     </button>
-                    <button type={"submit"} className="w-20 h-10 bg-green-700 hover:bg-opacity-80 text-white font-semibold rounded-lg">
+                    <button type={"submit"} className="w-20 h-10 bg-green-700 
+                    hover:bg-opacity-80 text-white font-semibold rounded-lg shadow-xl">
                         <div className="flex items-center justify-center space-x-2">
                             <MdSend/>
                             <p>送信</p>
