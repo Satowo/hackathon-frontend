@@ -6,11 +6,10 @@ import LoadingSpinner from "./components/lodingSpinner";
 import MessageDisplay from "./components/messageDisplay";
 import MessageForm from "./components/messageForm";
 import ChannelDisplay from "./components/channelDisplay";
-import {HiOutlineLogout} from "react-icons/hi";
 import {FaUser} from "react-icons/fa";
 import {BiPlus} from "react-icons/bi";
 import { channel } from "diagnostics_channel";
-
+import ChannelHeader from "./components/channelHeader";
 
 const Mypage = () => {
   type User = {
@@ -39,13 +38,15 @@ const Mypage = () => {
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
+ /*  const [inChannel, setInChannel] = useState(true);                 */                          //一つでもチャンネルに所属しているかどうかをstateに設定
   const [channelsDisplay, setChannelsDisplay] = useState(true);                                    //チャンネル一覧を表示しているかどうかをstateに設定
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容をstateに設定
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージをstateに設定。
-  const [channelId, setChannelId] = useState<string | undefined>(userInfo?.channels[0].channelId); //userが今表示しているチャンネルのchannelIdを設定。デフォルトは0番目
+  const [channel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);              //userが今表示しているチャンネルをstateに設定
+  const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバーをstateに設定
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
-  const [_loading, _setLoading] = useState(true);                                                  //最初にloading出したいのでtrue
+  const [_loading, _setLoading] = useState(true);                                                  //最初に_loading出したいのでtrue
 
 
   //はじめにuserがログインしているか確認、していればそのuser情報をuserに入れる関数
@@ -54,10 +55,12 @@ const Mypage = () => {
       setUser(currentUser);
       setLoading(false);
       console.log(currentUser?.email);
-      getUserInfo(backEndURL, currentUser?.email).then((userInfo: User) => {
-        setChannelId(userInfo.channels[0].channelId);
-        getMessages(userInfo.channels[0].channelId);
+      if (currentUser != null ) {
+        getUserInfo(backEndURL, currentUser?.email).then((userInfo: User) => {
+          getMessages(userInfo?.channels[0]);
+          setChannel(userInfo?.channels[0]);
       });
+      }
     });
   }, []);
 
@@ -87,20 +90,21 @@ const Mypage = () => {
         }
 
         console.log("response is ...", res);
-        const _userInfo = await res.json()
+        const _userInfo = await res.json();
+        console.log(_userInfo);
         setUserInfo(_userInfo)
         return _userInfo
     } catch (err) {
         console.error(err);
     }
-    
   };
 
   //channelIdからそのチャンネル内のメッセージをすべて取得する関数
-  const getMessages = async (channelId: string|undefined) =>  {
-    try {
+  const getMessages = async (channel: Channel | undefined) =>  {
+    if (channel != undefined){
+      try {
         const res = await fetch(
-            `${backEndURL+"/message?channelId="+channelId}`,
+            `${backEndURL+"/message?channelId="+channel?.channelId}`,
             {
                 method: "GET",
                 headers: {
@@ -114,11 +118,46 @@ const Mypage = () => {
 
         console.log("response is ...", res);
         const messagesData = await res.json();
+        console.log(messagesData);
         setMessagesData(messagesData);
-        setChannelId(channelId);
+        setChannel(channel);
         _setLoading(false);
-    } catch (err) {
+      } catch (err) {
         console.error(err);
+      }
+    }
+    else {
+      _setLoading(false);
+    }
+  };
+
+  const getChannelMembers = async (channel: Channel | undefined) =>  {
+    if (channel != undefined){
+      try {
+        const res = await fetch(
+            `${backEndURL+"/channel_member?channelId="+channel?.channelId}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch messages: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const Members = await res.json();
+        setChannelMembers(Members);
+        setChannel(channel);
+        _setLoading(false);
+      } catch (err) {
+          console.error(err);
+      }
+    }
+    else{
+      return
     }
   };
 
@@ -146,7 +185,7 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               userId: userInfo?.userId,
-              channelId: channelId,
+              channelId: channel?.channelId,
               messageContent: messageContent
             }),
           }
@@ -188,7 +227,7 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               messageId: message?.messageId,
-              channelId: channelId,
+              channelId: channel?.channelId,
               messageContent: messageContent
             }),
           }
@@ -225,7 +264,7 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               messageId: message?.messageId,
-              channelId: channelId,
+              channelId: message?.channelId,
             }),
           }
       );
@@ -254,13 +293,19 @@ const Mypage = () => {
           {!user ? (
               <Navigate to={`/login/`} />
           ) : (
-          <div className="myPage static">
-            <div className="sideBar w-1/4 fixed bottom-0 left-0 top-0 bg-purple-900 py-8">
-              <h1 className="text-2xl text-white font-bold mb-3 pb-4 border-b border-purple-700">UTokyo Tech Club</h1>
+          <div className="static w-screen h-screen">
+            <div className="w-1/5 h-screen fixed left-0 bg-purple-900 py-8">
+              <h1 className="text-lg text-gray-300 text-opacity-100 font-bold mb-3 pb-4 border-b border-purple-700">
+                UTokyo Tech Club
+              </h1>
               <div className="flex flex-col items-center">
                 <div className="flex w-3/4 h-20 mb-3 border border-purple-700">
-                  <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl"><FaUser/></div>
-                  <p className="flex-1 flex items-center justify-center text-xl font-semibold text-gray-300">{userInfo?.userName}</p>
+                  <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl">
+                    <FaUser/>
+                  </div>
+                  <p className="flex-1 flex items-center justify-center text-xl font-semibold text-gray-300">
+                    {userInfo?.userName}
+                  </p>
                 </div>
                 <div className="flex w-3/4 h-10 mb-3 space-x-2 border border-purple-700">
                   <button type="button" className="flex w-2/3 flex items-center justify-center 
@@ -278,36 +323,35 @@ const Mypage = () => {
                 </div>
                 {!channelsDisplay ? null : (
                   <div className="w-3/4 space-y-2 mb-6 border border-purple-700">
-                    {userInfo?.channels.map((channel: Channel) => (
-                      <ChannelDisplay key={channel.channelId} channel={channel} getMessages={getMessages}/>
+                    {userInfo?.channels.map((channel: Channel | undefined) => (
+                      <ChannelDisplay key={channel?.channelId} channel={channel} getMessages={getMessages}/>
                     ))}
                   </div>
                 )}
-                <div className="logOut mb-8">
-                  <button
-                    className="bg-purple-900 hover:bg-purple-300 text-white text-2xl font-bold py-2 px-4 rounded-lg"
-                    onClick={logout}
-                  >
-                    <HiOutlineLogout/>
-                  </button>
-                </div>
               </div>
             </div>
-            <div>
-              {_loading ? (
-                <p className="text-lg"></p>
-              ) : (
-              <div className="absolute flex right-0 w-3/4 h-3/4 overflow-y-auto border border-gray-300">
-                <div className="w-full">
-                {messagesData?.map((message: Message) => (
-                  <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
-                ))}
-                </div>
+            <div className="w-4/5 h-screen">
+              <div className="w-4/5 h-16 fixed top-0 right-0">
+                <ChannelHeader logout={logout} channel={channel} getChannelMembers={getChannelMembers} getMessages={getMessages}/>
               </div>
-              )}
-              {userInfo && (
-              <MessageForm onSubmit={onSubmit} onSubmitEdit={onSubmitEdit} userName={userInfo.userName} defaultMessage={defaultMessage} />
-            )}
+              <div className="flex-column">
+                {_loading ? (
+                    <LoadingSpinner/>
+                ) : (
+                  <div className="absolute w-4/5 top-16 bottom-44 right-0 overflow-y-auto">
+                    <div className="w-full">
+                    {messagesData?.map((message: Message) => (
+                      <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
+                    ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="w-4/5 h-44 fixed bottom-0 right-0">
+                {userInfo && (
+                  <MessageForm onSubmit={onSubmit} onSubmitEdit={onSubmitEdit} userName={userInfo.userName} defaultMessage={defaultMessage} />
+                )}
+              </div>
             </div>
           </div>
           )}

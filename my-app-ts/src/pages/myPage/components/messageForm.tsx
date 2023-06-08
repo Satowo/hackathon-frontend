@@ -15,7 +15,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
     const [edited, setEdited] = useState(false);
 
     useEffect(() => {
-        if (defaultMessage!="") {
+        if (defaultMessage !== "") {
             setMessageContent(defaultMessage);
             setEdited(true);
         }
@@ -40,7 +40,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
 
     if (!edited){
         return (
-            <form onSubmit={submit} className="w-3/4 h-1/4 fixed bottom-0 right-0 px-4 pt-4 pb-8 bg-gray-200 border border-gray-200 rounded-lg">
+            <form onSubmit={submit} className="px-4 pt-4 pb-8 bg-gray-200 border border-gray-200 rounded-lg">
                 <div className="flex space-x-3 border border-gray-200">
                     <div className="items-center justify-center text-purple-800 text-4xl"><FaUser/></div>
                     <p className="pt-1 text-xl font-bold">{userName}</p>
@@ -63,7 +63,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
 
     else {
         return (
-            <form onSubmit={submitEdit} className="w-3/4 h-1/4 fixed bottom-0 right-0 px-4 pt-4 pb-8 bg-gray-200 border border-gray-200 rounded-lg">
+            <form onSubmit={submitEdit} className="px-4 pt-4 pb-8 bg-gray-200 border border-gray-200 rounded-lg">
                 <div className="flex space-x-3 border border-gray-200">
                     <div className="items-center justify-center text-purple-800 text-4xl"><FaUser/></div>
                     <div className="flex items-center space-x-2">

@@ -41,7 +41,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ message, userInfo, onCl
   };
 
   return (
-    <div className="py-3 border border-gray-300">
+    <div className="py-3 w-full border">
       <div className="flex w-full p-2 space-x-2 hover:bg-gray-200 rounded-lg">
         <div className="p-1 text-purple-800 text-4xl">
           <FaUser/>

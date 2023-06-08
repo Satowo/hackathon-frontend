@@ -6,13 +6,13 @@ type Channel = {
 };
 
 type ChannelDisplayProps = {
-  channel: Channel;
-  getMessages: (channelId: string) => Promise<void>;
+  channel: Channel | undefined;
+  getMessages: (channel: Channel | undefined) => Promise<void>;
 };
 
 const ChannelDisplay: React.FC<ChannelDisplayProps> = ({channel, getMessages,}) => {
   const onClick = () => {
-    getMessages(channel.channelId);
+    getMessages(channel);
   };
 
   return (
@@ -24,7 +24,7 @@ const ChannelDisplay: React.FC<ChannelDisplayProps> = ({channel, getMessages,}) 
         >
           <div className="flex items-center">
             <p className="w-1/4 text-xl">#</p>
-            <p className="w-3/4">{channel.channelName}</p>
+            <p className="w-3/4">{channel?.channelName}</p>
           </div>
         </button>
     </div>
