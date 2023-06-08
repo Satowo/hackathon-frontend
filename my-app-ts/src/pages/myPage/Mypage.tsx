@@ -33,8 +33,8 @@ const Mypage = () => {
     edited: boolean
   };
 
-  const backEndURL = "http://localhost:8080"
-  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
+  /* const backEndURL = "http://localhost:8080" */
+  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
