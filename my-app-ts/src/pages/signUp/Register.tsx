@@ -61,6 +61,7 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       alert("正しく入力してください");
+      <Navigate to={`/register/`} />;
     }
   };
 
