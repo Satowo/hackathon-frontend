@@ -39,11 +39,13 @@ const Mypage = () => {
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
  /*  const [inChannel, setInChannel] = useState(true);                 */                          //一つでもチャンネルに所属しているかどうかをstateに設定
-  const [channelsDisplay, setChannelsDisplay] = useState(true);                                    //チャンネル一覧を表示しているかどうかをstateに設定
+  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                    //チャンネル一覧を表示しているかどうかをstateに設定
+  const [allChannelsDisplay, setAllChannelsDisplay] = useState(true); 
+  const [channelsData, setChannelsData] = useState<Channel[]>([]);                                 //channelの全データをstateに設定
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容をstateに設定
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージをstateに設定。
-  const [channel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);              //userが今表示しているチャンネルをstateに設定
+  const [nowChannel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);              //userが今表示しているチャンネルをstateに設定
   const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバーをstateに設定
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                                                  //最初に_loading出したいのでtrue
@@ -73,7 +75,7 @@ const Mypage = () => {
     navigate("/login/");
   };
 
-  //ログインしているユーザーのemailからユーザー情報を取得する関数
+  //ログインしているユーザーのemailからユーザー情報を取得
   const getUserInfo = async (backEndURL: string, email: string | null | undefined) =>  {
     try {
         const res = await fetch(
@@ -99,8 +101,10 @@ const Mypage = () => {
     }
   };
 
-  //channelIdからそのチャンネル内のメッセージをすべて取得する関数
+  //channelIdからそのチャンネル内のメッセージをすべて取得
   const getMessages = async (channel: Channel | undefined) =>  {
+    _setLoading(true);
+
     if (channel != undefined){
       try {
         const res = await fetch(
@@ -131,6 +135,7 @@ const Mypage = () => {
     }
   };
 
+  //channelIdからそのチャンネル内のメンバーをすべて取得
   const getChannelMembers = async (channel: Channel | undefined) =>  {
     if (channel != undefined){
       try {
@@ -161,7 +166,7 @@ const Mypage = () => {
     }
   };
 
-  //onSubmit時にPOSTリクエストを送りmessagesのデータを更新する関数
+  //onSubmit時にPOSTリクエストを送りmessagesのデータを更新
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>, messageContent:string) => {
     e.preventDefault();
 
@@ -185,7 +190,7 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               userId: userInfo?.userId,
-              channelId: channel?.channelId,
+              channelId: nowChannel?.channelId,
               messageContent: messageContent
             }),
           }
@@ -227,7 +232,7 @@ const Mypage = () => {
             },
             body: JSON.stringify({
               messageId: message?.messageId,
-              channelId: channel?.channelId,
+              channelId: nowChannel?.channelId,
               messageContent: messageContent
             }),
           }
@@ -245,14 +250,14 @@ const Mypage = () => {
     };
   };
 
-  //メッセージの編集ボタンを押すとmessageIdのstateをそのメッセージのものに変更する関数
+  //メッセージの編集ボタンを押すとmessageIdのstateをそのメッセージのものに変更
   const onClickEdit = (message: Message) => {
     setMessage(message);
     setDefaultMessage(message.messageContent)
     console.log(defaultMessage)
   };
 
-  //メッセージのゴミ箱ボタンを押して削除するを選択するとそのメッセージを削除する関数
+  //メッセージのゴミ箱ボタンを押して削除するを選択するとそのメッセージを削除
   const onClickDelete = async (message: Message) => {
     try {
       const res = await fetch(
@@ -281,10 +286,36 @@ const Mypage = () => {
     };
   };
 
-  //自分が入っているチャンネルを取得する関数
+  //チャンネルボタンを押すと自分が入っているチャンネルを表示/非表示を切り替え
   const _setChannelsDisplay: React.MouseEventHandler<HTMLButtonElement> | undefined = () => {
-    setChannelsDisplay(!channelsDisplay);
+    setInChannelsDisplay(!inChannelsDisplay);
   };
+
+  //プラスボタンを押すと全チャンネルを取得する関数 
+  const getAllChannels: React.MouseEventHandler<HTMLButtonElement> = async () =>  {
+    try {
+        const res = await fetch(
+            `${backEndURL+"/channel"}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch userInfo: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const allChannels = await res.json();
+        console.log(allChannels);
+        setChannelsData(allChannels);
+        setAllChannelsDisplay(!allChannelsDisplay);
+    } catch (err) {
+        console.error(err);
+    }
+  }; 
 
   return (
     <div>
@@ -299,7 +330,7 @@ const Mypage = () => {
                 UTokyo Tech Club
               </h1>
               <div className="flex flex-col items-center">
-                <div className="flex w-3/4 h-20 mb-3 border border-purple-700">
+                <div className="flex w-3/4 h-20 mb-3">
                   <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl">
                     <FaUser/>
                   </div>
@@ -307,24 +338,36 @@ const Mypage = () => {
                     {userInfo?.userName}
                   </p>
                 </div>
-                <div className="flex w-3/4 h-10 mb-3 space-x-2 border border-purple-700">
+                <div className="flex w-3/4 h-10 mb-3 space-x-2">
                   <button type="button" className="flex w-2/3 flex items-center justify-center 
                     bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
                     font-semibold rounded-lg" onClick={_setChannelsDisplay}
                     >
-                    チャンネル
+                    マイチャンネル
                   </button>
                   <button type="button" className="flex w-1/3 flex items-center justify-center 
                     bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
-                    text-2xl font-semibold rounded-lg"
+                    text-2xl font-semibold rounded-lg" onClick={getAllChannels}
                     >
                     <BiPlus/>
                   </button>
                 </div>
-                {!channelsDisplay ? null : (
-                  <div className="w-3/4 space-y-2 mb-6 border border-purple-700">
+                {!inChannelsDisplay ? null : (
+                  <div className="w-3/4 space-y-2 mb-6">
                     {userInfo?.channels.map((channel: Channel | undefined) => (
-                      <ChannelDisplay key={channel?.channelId} channel={channel} getMessages={getMessages}/>
+                      <ChannelDisplay key={channel?.channelId} channel={channel} getMessages={getMessages} nowChannel={nowChannel}/>
+                    ))}
+                  </div>
+                )}
+                {!allChannelsDisplay ? null : (
+                  <div className="w-3/4 space-y-2 mb-6">
+                    <p className="p-2 text-gray-300 text-opacity-70 font-semibold border-b border-purple-700">
+                      参加可能なチャンネル
+                    </p>
+                    {channelsData.filter((channel: Channel) => 
+                      !userInfo?.channels.some(userChannel => userChannel.channelId === channel.channelId)
+                    ).map((filteredChannel: Channel) => (
+                      <ChannelDisplay key={filteredChannel.channelId} channel={filteredChannel} getMessages={getMessages} nowChannel={nowChannel}/>
                     ))}
                   </div>
                 )}
@@ -332,11 +375,13 @@ const Mypage = () => {
             </div>
             <div className="w-4/5 h-screen">
               <div className="w-4/5 h-16 fixed top-0 right-0">
-                <ChannelHeader logout={logout} channel={channel} getChannelMembers={getChannelMembers} getMessages={getMessages}/>
+                <ChannelHeader logout={logout} nowChannel={nowChannel} getChannelMembers={getChannelMembers} getMessages={getMessages}/>
               </div>
               <div className="flex-column">
                 {_loading ? (
+                  <div className="absolute w-4/5 right-0">
                     <LoadingSpinner/>
+                  </div>
                 ) : (
                   <div className="absolute w-4/5 top-16 bottom-44 right-0 overflow-y-auto">
                     <div className="w-full">
