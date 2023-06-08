@@ -12,8 +12,8 @@ const Register = () => {
   const [registerPassword, setRegisterPassword] = useState("");
   const [user, setUser] = useState<any>(undefined);
 
-  const backEndURL = "http://localhost:8080"
-  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
+  /* const backEndURL = "http://localhost:8080" */
+  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {

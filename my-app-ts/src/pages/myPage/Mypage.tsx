@@ -38,16 +38,15 @@ const Mypage = () => {
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
- /*  const [inChannel, setInChannel] = useState(true);                 */                          //一つでもチャンネルに所属しているかどうかをstateに設定
-  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //チャンネル一覧を表示しているかどうかをstateに設定
-  const [allChannelsDisplay, setAllChannelsDisplay] = useState(true); 
-  const [channelsData, setChannelsData] = useState<Channel[]>([]);                                 //channelの全データをstateに設定
-  const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
-  const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容をstateに設定
-  const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージをstateに設定。
-  const [nowChannel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネルをstateに設定
-  const [channelMembersDisplay, setChannelMembersDisplay] = useState(false);
-  const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバーをstateに設定
+  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //チャンネル一覧を表示しているかどうか
+  const [allChannelsDisplay, setAllChannelsDisplay] = useState(true);                              //参加可能なチャンネルを表示しているかどうか
+  const [channelsData, setChannelsData] = useState<Channel[]>([]);                                 //channelの全データ
+  const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データ
+  const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容
+  const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージ
+  const [nowChannel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネル
+  const [channelMembersDisplay, setChannelMembersDisplay] = useState(false);                       //チャンネルメンバーを表示しているかどうか
+  const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバー
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                                                  //最初に_loading出したいのでtrue
 
