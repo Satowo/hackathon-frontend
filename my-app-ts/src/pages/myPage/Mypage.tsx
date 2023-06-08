@@ -6,9 +6,9 @@ import LoadingSpinner from "./components/lodingSpinner";
 import MessageDisplay from "./components/messageDisplay";
 import MessageForm from "./components/messageForm";
 import ChannelDisplay from "./components/channelDisplay";
+import ChannelMembersDisplay from "./components/channelMembersDisplay";
 import {FaUser} from "react-icons/fa";
 import {BiPlus} from "react-icons/bi";
-import { channel } from "diagnostics_channel";
 import ChannelHeader from "./components/channelHeader";
 
 const Mypage = () => {
@@ -33,19 +33,20 @@ const Mypage = () => {
     edited: boolean
   };
 
-  /* const backEndURL = "http://localhost:8080" */
-  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
+  const backEndURL = "http://localhost:8080"
+  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
  /*  const [inChannel, setInChannel] = useState(true);                 */                          //一つでもチャンネルに所属しているかどうかをstateに設定
-  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                    //チャンネル一覧を表示しているかどうかをstateに設定
+  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //チャンネル一覧を表示しているかどうかをstateに設定
   const [allChannelsDisplay, setAllChannelsDisplay] = useState(true); 
   const [channelsData, setChannelsData] = useState<Channel[]>([]);                                 //channelの全データをstateに設定
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データをstateに設定
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容をstateに設定
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージをstateに設定。
-  const [nowChannel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);              //userが今表示しているチャンネルをstateに設定
+  const [nowChannel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネルをstateに設定
+  const [channelMembersDisplay, setChannelMembersDisplay] = useState(false);
   const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバーをstateに設定
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                                                  //最初に_loading出したいのでtrue
@@ -104,6 +105,7 @@ const Mypage = () => {
   //channelIdからそのチャンネル内のメッセージをすべて取得
   const getMessages = async (channel: Channel | undefined) =>  {
     _setLoading(true);
+    setChannelMembersDisplay(false);
 
     if (channel != undefined){
       try {
@@ -135,7 +137,7 @@ const Mypage = () => {
     }
   };
 
-  //channelIdからそのチャンネル内のメンバーをすべて取得
+  //チャンネルメンバーボタンを押すとchannelIdからそのチャンネル内のメンバーをすべて取得
   const getChannelMembers = async (channel: Channel | undefined) =>  {
     if (channel != undefined){
       try {
@@ -155,6 +157,7 @@ const Mypage = () => {
         console.log("response is ...", res);
         const Members = await res.json();
         setChannelMembers(Members);
+        setChannelMembersDisplay(!channelMembersDisplay);
         setChannel(channel);
         _setLoading(false);
       } catch (err) {
@@ -334,7 +337,7 @@ const Mypage = () => {
                   <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl">
                     <FaUser/>
                   </div>
-                  <p className="flex-1 flex items-center justify-center text-xl font-semibold text-gray-300">
+                  <p className="flex-1 flex items-center justify-center text-auto font-semibold text-gray-300">
                     {userInfo?.userName}
                   </p>
                 </div>
@@ -375,19 +378,32 @@ const Mypage = () => {
             </div>
             <div className="w-4/5 h-screen">
               <div className="w-4/5 h-16 fixed top-0 right-0">
-                <ChannelHeader logout={logout} nowChannel={nowChannel} getChannelMembers={getChannelMembers} getMessages={getMessages}/>
+                <ChannelHeader logout={logout} nowChannel={nowChannel} 
+                getChannelMembers={getChannelMembers} getMessages={getMessages} channelMembersDisplay={channelMembersDisplay} />
               </div>
               <div className="flex-column">
                 {_loading ? (
-                  <div className="absolute w-4/5 right-0">
+                  <div className="w-4/5 absolute right-0">
                     <LoadingSpinner/>
                   </div>
                 ) : (
-                  <div className="absolute w-4/5 top-16 bottom-44 right-0 overflow-y-auto">
-                    <div className="w-full">
-                    {messagesData?.map((message: Message) => (
-                      <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
-                    ))}
+                  <div>
+                    <div className="w-4/5 absolute top-16 bottom-44 right-0 overflow-y-auto">
+                      <div className="w-full">
+                      {messagesData?.map((message: Message) => (
+                        <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
+                      ))}
+                      </div>
+                    </div>
+                    <div>
+                      {!channelMembersDisplay ? null : (
+                      <div className="w-1/5 absolute top-16 right-0 bg-white border-y border-b border-gray-300 rounded-xl shadow-lg">
+                        <p className="text-lg font-semibold">チャンネルメンバー</p>
+                        {channelMembers?.map((member: User) => (
+                            <ChannelMembersDisplay key={member.userId} member={member}/>
+                          ))}
+                      </div>
+                    )}
                     </div>
                   </div>
                 )}
