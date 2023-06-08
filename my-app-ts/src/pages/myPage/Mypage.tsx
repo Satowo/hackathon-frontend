@@ -38,8 +38,8 @@ const Mypage = () => {
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
-  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //チャンネル一覧を表示しているかどうか
-  const [allChannelsDisplay, setAllChannelsDisplay] = useState(true);                              //参加可能なチャンネルを表示しているかどうか
+  const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //自分の参加しているチャンネル一覧を表示しているかどうか
+  const [otherChannelsDisplay, setOtherChannelsDisplay] = useState(true);                              //参加可能なチャンネルを表示しているかどうか
   const [channelsData, setChannelsData] = useState<Channel[]>([]);                                 //channelの全データ
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データ
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容
@@ -313,7 +313,7 @@ const Mypage = () => {
         const allChannels = await res.json();
         console.log(allChannels);
         setChannelsData(allChannels);
-        setAllChannelsDisplay(!allChannelsDisplay);
+        setOtherChannelsDisplay(!otherChannelsDisplay);
     } catch (err) {
         console.error(err);
     }
@@ -331,7 +331,7 @@ const Mypage = () => {
               <h1 className="text-lg text-gray-300 text-opacity-100 font-bold mb-3 pb-4 border-b border-purple-700">
                 UTokyo Tech Club
               </h1>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center border border-purple-700">
                 <div className="flex w-3/4 h-20 mb-3">
                   <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl">
                     <FaUser/>
@@ -340,39 +340,38 @@ const Mypage = () => {
                     {userInfo?.userName}
                   </p>
                 </div>
-                <div className="flex w-3/4 h-10 mb-3 space-x-2">
-                  <button type="button" className="flex w-2/3 flex items-center justify-center 
+                <div className="w-3/4 h-10 mb-3 space-x-2 border border-purple-700">
+                  <button type="button" className="w-full flex items-center justify-center 
                     bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
-                    font-semibold rounded-lg" onClick={_setChannelsDisplay}
+                    font-semibold rounded-lg border border-purple-700" onClick={_setChannelsDisplay}
                     >
-                    マイチャンネル
-                  </button>
-                  <button type="button" className="flex w-1/3 flex items-center justify-center 
-                    bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
-                    text-2xl font-semibold rounded-lg" onClick={getAllChannels}
-                    >
-                    <BiPlus/>
+                    {!inChannelsDisplay ? "▶︎  チャンネル" : "▼  チャンネル" }
                   </button>
                 </div>
                 {!inChannelsDisplay ? null : (
-                  <div className="w-3/4 space-y-2 mb-6">
+                  <div className="w-3/4 h-auto space-y-2 mb-6 border border-purple-700">
                     {userInfo?.channels.map((channel: Channel | undefined) => (
-                      <ChannelDisplay key={channel?.channelId} channel={channel} getMessages={getMessages} nowChannel={nowChannel}/>
+                      <ChannelDisplay key={channel?.channelId} channel={channel} getMessages={getMessages} nowChannel={nowChannel} />
                     ))}
                   </div>
                 )}
-                {!allChannelsDisplay ? null : (
-                  <div className="w-3/4 space-y-2 mb-6">
-                    <p className="p-2 text-gray-300 text-opacity-70 font-semibold border-b border-purple-700">
-                      参加可能なチャンネル
-                    </p>
-                    {channelsData.filter((channel: Channel) => 
+                <div className="w-3/4 space-y-2 mb-6 border border-purple-700">
+                    <button type="button" className="w-full flex items-center justify-center 
+                    bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
+                    font-semibold rounded-lg border border-purple-700" onClick={getAllChannels}
+                    >
+                    {!otherChannelsDisplay ? "▶︎  他のチャンネル" : "▼  他のチャンネル" }
+                    </button>
+                    {!otherChannelsDisplay ? null : (
+                    <div className="w-full space-y-2 mb-6 border border-purple-700">
+                      {channelsData.filter((channel: Channel) => 
                       !userInfo?.channels.some(userChannel => userChannel.channelId === channel.channelId)
-                    ).map((filteredChannel: Channel) => (
+                      ).map((filteredChannel: Channel) => (
                       <ChannelDisplay key={filteredChannel.channelId} channel={filteredChannel} getMessages={getMessages} nowChannel={nowChannel}/>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                    )}
+                </div>
               </div>
             </div>
             <div className="w-4/5 h-screen">
@@ -387,23 +386,34 @@ const Mypage = () => {
                   </div>
                 ) : (
                   <div>
-                    <div className="w-4/5 absolute top-16 bottom-44 right-0 overflow-y-auto">
-                      <div className="w-full">
-                      {messagesData?.map((message: Message) => (
-                        <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
-                      ))}
+                    {userInfo?.channels?.length === 0 ? (
+                      <div className="w-4/5 absolute top-16 bottom-44 right-0 overflow-y-auto">
+                        <div className="w-full flex-column items-center justify-center space-y-4 py-10 text-xl font-bold">
+                          <p>あなたはまだチャンネルに参加していません！！</p>
+                          <p>他のチャンネルからチャンネルに参加しましょう！</p>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      {!channelMembersDisplay ? null : (
-                      <div className="w-1/5 absolute top-16 right-0 bg-white border-y border-b border-gray-300 rounded-xl shadow-lg">
-                        <p className="text-lg font-semibold">チャンネルメンバー</p>
-                        {channelMembers?.map((member: User) => (
-                            <ChannelMembersDisplay key={member.userId} member={member}/>
-                          ))}
+                    ) : (
+                      <div>
+                        <div className="w-4/5 absolute top-16 bottom-44 right-0 overflow-y-auto">
+                          <div className="w-full">
+                            {messagesData?.map((message: Message) => (
+                              <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          {!channelMembersDisplay ? null : (
+                            <div className="w-1/5 absolute top-16 right-0 bg-white border-y border-b border-gray-300 rounded-xl shadow-lg">
+                              <p className="text-lg font-semibold">チャンネルメンバー</p>
+                              {channelMembers?.map((member: User) => (
+                                <ChannelMembersDisplay key={member.userId} member={member}/>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
-                    </div>
                   </div>
                 )}
               </div>
