@@ -41,7 +41,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ message, userInfo, onCl
   };
 
   return (
-    <div className="py-3 w-full border">
+    <div className="py-2 w-full border">
       <div className="flex w-full p-2 space-x-2 hover:bg-gray-200 rounded-lg">
         <div className="p-1 text-purple-800 text-4xl">
           <FaUser/>
@@ -61,7 +61,7 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ message, userInfo, onCl
             )}
           </div>
           <div className="flex space-x-2">
-            <p className="text-left">{message.messageContent}</p>
+            <p className="text-left text-sm">{message.messageContent}</p>
             {!message.edited ? null : (<p className="text-gray-600 opacity-50">(編集済み)</p> )}
           </div>
         </div>

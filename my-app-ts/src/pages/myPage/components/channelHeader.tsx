@@ -1,6 +1,8 @@
-import {HiOutlineLogout} from "react-icons/hi";
+import { useState } from "react";
+import { HiOutlineLogout } from "react-icons/hi";
 import { HiUsers } from "react-icons/hi";
 import { RxReload } from "react-icons/rx";
+
 
 type Channel = {
     channelId: string;
@@ -12,6 +14,7 @@ type ChannelHeaderProps = {
     nowChannel: Channel | undefined;
     getChannelMembers: (channel: Channel | undefined) => Promise<void>;
     getMessages: (channel: Channel | undefined) => Promise<void>;
+    channelMembersDisplay: boolean;
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps>= ({logout, nowChannel, getChannelMembers, getMessages}) => {

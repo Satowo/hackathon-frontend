@@ -7,13 +7,13 @@ import Mypage from "./pages/myPage/Mypage";
 function App() {
   return (
     <div className='App h-screen w-screen'>
-          <BrowserRouter>
-            <Routes>
-              <Route path={`/register/`} element={<Register />} />
-              <Route path={`/login/`} element={<Login />} />
-              <Route path={`/`} element={<Mypage />} />
-            </Routes>
-          </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route path={`/register/`} element={<Register />} />
+          <Route path={`/login/`} element={<Login />} />
+          <Route path={`/`} element={<Mypage />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

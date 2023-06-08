@@ -77,7 +77,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
                 ></textarea>
-                <div className="flex items-center space-x-5 fixed right-5">
+                <div className="flex items-center space-x-5">
                     <button type="button" className="rounded-lg text-xl text-gray-700 hover:bg-gray-500 hover:bg-opacity-50" onClick={onClick}>
                         <TbEditOff/>
                     </button>

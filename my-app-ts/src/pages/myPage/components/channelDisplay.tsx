@@ -25,7 +25,7 @@ const ChannelDisplay: React.FC<ChannelDisplayProps> = ({channel, getMessages, no
           onClick={onClick}
         >
           <div className="flex items-center">
-            <p className="w-1/4 text-xl">#</p>
+            <p className="w-1/4 text-auto">#</p>
             <p className="w-3/4">{channel?.channelName}</p>
           </div>
         </button>
