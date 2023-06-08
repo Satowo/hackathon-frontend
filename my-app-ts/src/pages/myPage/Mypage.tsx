@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
+import { useNavigate, Navigate } from "react-router-dom";
+import LoadingSpinner from "./components/lodingSpinner"; 
 import MessageDisplay from "./components/messageDisplay";
 import MessageForm from "./components/messageForm";
-import { useNavigate, Navigate } from "react-router-dom";
 import ChannelDisplay from "./components/channelDisplay";
 import {HiOutlineLogout} from "react-icons/hi";
 import {FaUser} from "react-icons/fa";
 import {BiPlus} from "react-icons/bi";
+import { channel } from "diagnostics_channel";
 
 
 const Mypage = () => {
@@ -32,8 +34,8 @@ const Mypage = () => {
     edited: boolean
   };
 
-  /* const backEndURL = "http://localhost:8080" */
-  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
+  const backEndURL = "http://localhost:8080"
+  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
@@ -51,10 +53,10 @@ const Mypage = () => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
-      console.log(channelId);
-      getMessages(channelId);
-      getUserInfo(backEndURL, currentUser?.email).then(() => {
-        getMessages(channelId)
+      console.log(currentUser?.email);
+      getUserInfo(backEndURL, currentUser?.email).then((userInfo: User) => {
+        setChannelId(userInfo.channels[0].channelId);
+        getMessages(userInfo.channels[0].channelId);
       });
     });
   }, []);
@@ -91,6 +93,7 @@ const Mypage = () => {
     } catch (err) {
         console.error(err);
     }
+    
   };
 
   //channelIdからそのチャンネル内のメッセージをすべて取得する関数
@@ -249,7 +252,7 @@ const Mypage = () => {
       {!loading && (
         <div>
           {!user ? (
-            <Navigate to={`/login/`} />
+              <Navigate to={`/login/`} />
           ) : (
           <div className="myPage static">
             <div className="sideBar w-1/4 fixed bottom-0 left-0 top-0 bg-purple-900 py-8">
@@ -295,7 +298,7 @@ const Mypage = () => {
                 <p className="text-lg"></p>
               ) : (
               <div className="absolute flex right-0 w-3/4 h-3/4 overflow-y-auto border border-gray-300">
-                <div>
+                <div className="w-full">
                 {messagesData?.map((message: Message) => (
                   <MessageDisplay key={message.messageId} message={message} userInfo={userInfo} onClickEdit={onClickEdit} onClickDelete={onClickDelete}/>
                 ))}
