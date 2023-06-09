@@ -8,7 +8,8 @@ import MessageForm from "./components/messageForm";
 import ChannelDisplay from "./components/channelDisplay";
 import ChannelMembersDisplay from "./components/channelMembersDisplay";
 import {FaUser} from "react-icons/fa";
-import {BiPlus} from "react-icons/bi";
+import {AiOutlinePlusCircle} from "react-icons/ai";
+import {FiMinusCircle} from "react-icons/fi";
 import ChannelHeader from "./components/channelHeader";
 
 const Mypage = () => {
@@ -33,20 +34,20 @@ const Mypage = () => {
     edited: boolean
   };
 
-  /* const backEndURL = "http://localhost:8080" */
-  const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
+  const backEndURL = "http://localhost:8080"
+  /* const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app" */
 
   const [user, setUser] = useState<any>();
   const [userInfo, setUserInfo] = useState<User>();
   const [inChannelsData, setInChannelsData] = useState<Channel[]>([]);                             //自分が参加しているチャンネル
-  const [outChannelsDisplay, setOutChannelsDisplay] = useState(false);   
+  const [noChannelsDisplay, setNoChannelsDisplay] = useState(false);   
   const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //自分の参加しているチャンネル一覧を表示しているかどうか
   const [otherChannelsDisplay, setOtherChannelsDisplay] = useState(false);                          //参加可能なチャンネルを表示しているかどうか
   const [allChannelsData, setAllChannelsData] = useState<Channel[]>([]);                                 //channelの全データ
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データ
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージ
-  const [nowChannel, setChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネル
+  const [nowChannel, setNowChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネル
   const [channelMembersDisplay, setChannelMembersDisplay] = useState(false);                       //チャンネルメンバーを表示しているかどうか
   const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバー
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
@@ -62,7 +63,7 @@ const Mypage = () => {
       if (currentUser != null ) {
         getUserInfo(backEndURL, currentUser?.email).then((userInfo: User) => {
           getMessages(userInfo?.channels[0]);
-          setChannel(userInfo?.channels[0]);
+          setNowChannel(userInfo?.channels[0]);
       });
       }
     });
@@ -112,7 +113,7 @@ const Mypage = () => {
     if (channel !== undefined && userInfo?.channels !== undefined){
       const exists = userInfo?.channels.find(ch => ch.channelId === channel.channelId);
       if (exists) {
-        setOutChannelsDisplay(false);
+        setNoChannelsDisplay(false);
 
           try {
               const res = await fetch(
@@ -132,14 +133,14 @@ const Mypage = () => {
               const messagesData = await res.json();
               console.log(messagesData);
               setMessagesData(messagesData);
-              setChannel(channel);
+              setNowChannel(channel);
               _setLoading(false);
           } catch (err) {
               console.error(err);
           }
         } else {
           console.log('Channel does not exist in the user info channel list');
-          setOutChannelsDisplay(true);
+          setNoChannelsDisplay(true);
           _setLoading(false);
         }
     } else {
@@ -152,7 +153,7 @@ const Mypage = () => {
     if (channel != undefined){
       try {
         const res = await fetch(
-            `${backEndURL+"/channel_member?channelId="+channel?.channelId}`,
+            `${backEndURL+"/channelMember?channelId="+channel?.channelId}`,
             {
                 method: "GET",
                 headers: {
@@ -168,7 +169,7 @@ const Mypage = () => {
         const Members = await res.json();
         setChannelMembers(Members);
         setChannelMembersDisplay(!channelMembersDisplay);
-        setChannel(channel);
+        setNowChannel(channel);
         _setLoading(false);
       } catch (err) {
           console.error(err);
@@ -237,7 +238,7 @@ const Mypage = () => {
 
     try {
       const res = await fetch(
-          backEndURL+"/message_edit",
+          backEndURL+"/messageEdit",
           {
             method: "POST",
             headers: {
@@ -274,7 +275,7 @@ const Mypage = () => {
   const onClickDelete = async (message: Message) => {
     try {
       const res = await fetch(
-          backEndURL+"/message_delete",
+          backEndURL+"/messageDelete",
           {
             method: "POST",
             headers: {
@@ -330,8 +331,91 @@ const Mypage = () => {
     }
   }; 
 
-  //チャンネルの横のプラスボタンを押すとそのチャンネルに参加
-  
+  //他のチャンネルの横のプラスボタンを押すとそのチャンネルに参加
+  const channelJoin = async (channel: Channel | undefined) =>  {
+    _setLoading(true);
+    setChannelMembersDisplay(false);
+    setNoChannelsDisplay(false);
+    setInChannelsDisplay(false);
+
+    if(channel !== undefined && userInfo !== undefined){
+      try {
+        const res = await fetch(
+            `${backEndURL+"/channelMember"}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: userInfo.userId,
+                channelId: channel.channelId,
+              }),
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch messages: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const userInfoRes = await res.json();
+        console.log(userInfoRes);
+        setUserInfo(userInfoRes);
+        setNowChannel(channel);
+        _setLoading(false);
+        setInChannelsDisplay(true);
+    } catch (err) {
+        console.error(err);
+    }
+    }else{
+      _setLoading(false);
+      setNoChannelsDisplay(true);
+      return
+    }
+  } 
+
+  //チャンネルの横のマイナスボタンを押すとそのチャンネルから退会
+  const channelLeave = async (channel: Channel | undefined) =>  {
+    _setLoading(true);
+    setChannelMembersDisplay(false);
+    setNoChannelsDisplay(false);
+    setInChannelsDisplay(false);
+
+    if(channel !== undefined && userInfo !== undefined){
+      try {
+        const res = await fetch(
+            `${backEndURL+"/channelLeave"}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: userInfo.userId,
+                channelId: channel.channelId,
+              }),
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch messages: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const userInfoRes = await res.json();
+        console.log(userInfoRes);
+        setUserInfo(userInfoRes);
+        setNowChannel(userInfoRes?.channels[0]);
+        setInChannelsDisplay(true);
+        _setLoading(false);
+    } catch (err) {
+        console.error(err);
+    }
+    }else{
+      _setLoading(false);
+      setNoChannelsDisplay(true);
+      return
+    }
+  } 
 
   return (
     <div>
@@ -345,7 +429,7 @@ const Mypage = () => {
               <h1 className="text-lg text-gray-300 text-opacity-100 font-bold mb-3 pb-4 border-b border-purple-700">
                 UTokyo Tech Club
               </h1>
-              <div className="flex flex-col items-center border border-purple-700">
+              <div className="flex flex-col items-center">
                 <div className="flex w-3/4 h-20 mb-3">
                   <div className="flex-1 flex items-center justify-center text-blue-200 text-6xl">
                     <FaUser/>
@@ -354,34 +438,48 @@ const Mypage = () => {
                     {userInfo?.userName}
                   </p>
                 </div>
-                <div className="w-3/4 h-10 mb-3 space-x-2 border border-purple-700">
+                <div className="w-3/4 h-10 mb-3 space-x-2">
                   <button type="button" className="w-full flex items-center justify-center 
                     bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
-                    font-semibold rounded-lg border border-purple-700" onClick={_setChannelsDisplay}
+                    font-semibold rounded-lg" onClick={_setChannelsDisplay}
                     >
                     {!inChannelsDisplay ? "▶︎  チャンネル" : "▼  チャンネル" }
                   </button>
                 </div>
                 {!inChannelsDisplay ? null : (
-                  <div className="w-3/4 h-auto space-y-2 mb-6 border border-purple-700">
+                  <div className="w-3/4 h-auto space-y-2 mb-6">
                     {userInfo?.channels.map((channel: Channel | undefined) => (
-                      <ChannelDisplay key={channel?.channelId} channel={channel} getMessages={getMessages} nowChannel={nowChannel} />
+                      <ChannelDisplay 
+                      key={channel?.channelId} 
+                      channel={channel} 
+                      getMessages={getMessages} 
+                      nowChannel={nowChannel} 
+                      buttonIcon={<FiMinusCircle />}
+                      onClick={channelLeave}
+                      />
                     ))}
                   </div>
                 )}
-                <div className="w-3/4 space-y-2 mb-6 border border-purple-700">
+                <div className="w-3/4 space-y-2 mb-6">
                     <button type="button" className="w-full flex items-center justify-center 
                     bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
-                    font-semibold rounded-lg border border-purple-700" onClick={getOtherChannels}
+                    font-semibold rounded-lg" onClick={getOtherChannels}
                     >
                     {!otherChannelsDisplay ? "▶︎  他のチャンネル" : "▼  他のチャンネル" }
                     </button>
                     {!otherChannelsDisplay ? null : (
-                    <div className="w-full space-y-2 mb-6 border border-purple-700">
+                    <div className="w-full space-y-2 mb-6">
                       {allChannelsData.filter((channel: Channel) => 
                       !userInfo?.channels.some(userChannel => userChannel.channelId === channel.channelId)
                       ).map((filteredChannel: Channel) => (
-                      <ChannelDisplay key={filteredChannel.channelId} channel={filteredChannel} getMessages={getMessages} nowChannel={nowChannel}/>
+                      <ChannelDisplay 
+                      key={filteredChannel.channelId} 
+                      channel={filteredChannel} 
+                      getMessages={getMessages} 
+                      nowChannel={nowChannel}
+                      buttonIcon={<AiOutlinePlusCircle />}
+                      onClick={channelJoin}
+                      />
                       ))}
                     </div>
                     )}
@@ -400,7 +498,7 @@ const Mypage = () => {
                   </div>
                 ) : (
                   <div>
-                    {(userInfo?.channels?.length === 0) || (outChannelsDisplay) ? (
+                    {(userInfo?.channels?.length === 0) || (noChannelsDisplay) ? (
                       <div className="w-4/5 absolute top-16 bottom-44 right-0 overflow-y-auto">
                         <div className="w-full flex-column items-center justify-center space-y-4 py-10 text-xl font-bold">
                           <p>あなたはまだチャンネルに参加していません！！</p>
