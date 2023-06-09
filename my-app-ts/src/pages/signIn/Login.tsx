@@ -4,6 +4,7 @@ import {
   onAuthStateChanged
 } from "firebase/auth";
 import { auth } from "../../firebase";
+import type { User } from '@firebase/auth'
 import { Navigate, Link } from "react-router-dom";
 
 const Login = () => {
@@ -24,7 +25,7 @@ const Login = () => {
     }
   };
 
-  const [user, setUser] = useState<any>(undefined);
+  const [user, setUser] = useState<User | null>();
 
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {

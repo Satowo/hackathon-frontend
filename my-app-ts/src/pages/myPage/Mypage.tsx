@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../../firebase";
+import type { User } from '@firebase/auth'
 import { useNavigate, Navigate } from "react-router-dom";
 import LoadingSpinner from "./components/lodingSpinner"; 
 import MessageDisplay from "./components/messageDisplay";
@@ -13,7 +14,7 @@ import {FiMinusCircle} from "react-icons/fi";
 import ChannelHeader from "./components/channelHeader";
 
 const Mypage = () => {
-  type User = {
+  type AppUser = {
     userId: string;
     userName: string;
     email: string;
@@ -37,8 +38,8 @@ const Mypage = () => {
   /* const backEndURL = "http://localhost:8080" */
   const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
-  const [user, setUser] = useState<any>();
-  const [userInfo, setUserInfo] = useState<User>();
+  const [user, setUser] = useState<User | null>();
+  const [userInfo, setUserInfo] = useState<AppUser>();
   const [inChannelsData, setInChannelsData] = useState<Channel[]>([]);                             //自分が参加しているチャンネル
   const [noChannelsDisplay, setNoChannelsDisplay] = useState(false);   
   const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //自分の参加しているチャンネル一覧を表示しているかどうか
@@ -49,7 +50,7 @@ const Mypage = () => {
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージ
   const [nowChannel, setNowChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネル
   const [channelMembersDisplay, setChannelMembersDisplay] = useState(false);                       //チャンネルメンバーを表示しているかどうか
-  const [channelMembers, setChannelMembers] = useState<User[]>();                                  //userが今表示しているチャンネルのチャンネルメンバー
+  const [channelMembers, setChannelMembers] = useState<AppUser[]>();                                  //userが今表示しているチャンネルのチャンネルメンバー
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                                                  //最初に_loading出したいのでtrue
 
@@ -61,7 +62,7 @@ const Mypage = () => {
       setLoading(false);
       console.log(currentUser?.email);
       if (currentUser != null ) {
-        getUserInfo(backEndURL, currentUser?.email).then((userInfo: User) => {
+        getUserInfo(backEndURL, currentUser?.email).then((userInfo: AppUser) => {
           getMessages(userInfo?.channels[0]);
           setNowChannel(userInfo?.channels[0]);
       });
@@ -518,7 +519,7 @@ const Mypage = () => {
                           {!channelMembersDisplay ? null : (
                             <div className="w-1/5 absolute top-16 right-0 bg-white border-y border-b border-gray-300 rounded-xl shadow-lg">
                               <p className="text-lg font-semibold">チャンネルメンバー</p>
-                              {channelMembers?.map((member: User) => (
+                              {channelMembers?.map((member: AppUser) => (
                                 <ChannelMembersDisplay key={member.userId} member={member}/>
                               ))}
                             </div>

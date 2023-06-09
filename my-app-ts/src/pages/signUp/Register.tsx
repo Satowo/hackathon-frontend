@@ -5,12 +5,13 @@ import {
 } from "firebase/auth";
 import { auth } from "../../firebase";
 import { Navigate, Link } from "react-router-dom";
+import type { User } from '@firebase/auth'
 
 const Register = () => {
   const [registerUserName, setRegisterUserName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
-  const [user, setUser] = useState<any>(undefined);
+  const [user, setUser] = useState<User | null>();
 
   /* const backEndURL = "http://localhost:8080" */
   const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
@@ -61,7 +62,7 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       alert("正しく入力してください");
-      <Navigate to={`/register/`} />;
+      setUser(null);
     }
   };
 
