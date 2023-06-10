@@ -12,15 +12,42 @@ const Register = () => {
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [user, setUser] = useState<User | null>();
+  const [allUsersName, setAllUsersName] = useState<string[]>([]);
 
   /* const backEndURL = "http://localhost:8080" */
   const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
   useEffect(() => {
+    getAllAppUsersName();
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
   }, []);
+
+  const getAllAppUsersName = async () =>  {
+    try {
+        const res = await fetch(
+            `${backEndURL+"/allUsers"}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!res.ok) {
+            throw Error(`Failed to fetch userInfo: ${res.status}`);
+        }
+
+        console.log("response is ...", res);
+        const _allUsersName: string[] = await res.json();
+        console.log(_allUsersName);
+        setAllUsersName(_allUsersName);
+        return _allUsersName
+    } catch (err) {
+        console.error(err);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,6 +60,23 @@ const Register = () => {
     if (registerUserName.length > 10) {
       alert("名前は10文字以下にしてください");
       return;
+    }
+
+    if (registerPassword.length < 5) {
+      alert("パスワードが短すぎます");
+      return;
+    }
+
+    if (registerPassword.length > 30) {
+      alert("パスワードが長すぎます");
+      return;
+    }
+
+    // Check if username or email already exists
+    const exists = allUsersName.find(name => name === registerUserName);
+    if (exists) {
+      alert("このユーザーネームはすでに使われています")
+      return
     }
 
     try {
@@ -55,6 +99,7 @@ const Register = () => {
       });
 
       if (!res.ok) {
+        setUser(undefined);
         throw Error(`Failed to fetch users: ${res.status}`);
       }
 
@@ -62,9 +107,10 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       alert("正しく入力してください");
-      setUser(null);
+      setUser(undefined);
     }
   };
+
 
   return (
     <div className="flex items-center justify-center h-screen bg-gradient-to-r from-purple-900 to-green-500">

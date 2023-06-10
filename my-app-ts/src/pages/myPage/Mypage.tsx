@@ -39,18 +39,17 @@ const Mypage = () => {
   const backEndURL = "https://hackathon-backend-ipy2xx7l4q-uc.a.run.app"
 
   const [user, setUser] = useState<User | null>();
-  const [userInfo, setUserInfo] = useState<AppUser>();
-  const [inChannelsData, setInChannelsData] = useState<Channel[]>([]);                             //自分が参加しているチャンネル
-  const [noChannelsDisplay, setNoChannelsDisplay] = useState(false);   
+  const [userInfo, setUserInfo] = useState<AppUser>();                                             //ログイン中のAppUserの情報
+  const [noChannelsDisplay, setNoChannelsDisplay] = useState(false);                               //チャンネルに参加していないことを表示しているかどうか
   const [inChannelsDisplay, setInChannelsDisplay] = useState(true);                                //自分の参加しているチャンネル一覧を表示しているかどうか
-  const [otherChannelsDisplay, setOtherChannelsDisplay] = useState(false);                          //参加可能なチャンネルを表示しているかどうか
-  const [allChannelsData, setAllChannelsData] = useState<Channel[]>([]);                                 //channelの全データ
+  const [otherChannelsDisplay, setOtherChannelsDisplay] = useState(false);                         //参加可能なチャンネルを表示しているかどうか
+  const [allChannelsData, setAllChannelsData] = useState<Channel[]>([]);                           //channelの全データ
   const [messagesData, setMessagesData] = useState<Message[]>([]);                                 //messageの全データ
   const [defaultMessage, setDefaultMessage] = useState("");                                        //デフォルトのmessage入力欄の内容
   const [message, setMessage] = useState<Message>();                                               //userが今表示しているメッセージ
-  const [nowChannel, setNowChannel] = useState<Channel | undefined>(userInfo?.channels[0]);           //userが今表示しているチャンネル
+  const [nowChannel, setNowChannel] = useState<Channel | undefined>(userInfo?.channels[0]);        //userが今表示しているチャンネル
   const [channelMembersDisplay, setChannelMembersDisplay] = useState(false);                       //チャンネルメンバーを表示しているかどうか
-  const [channelMembers, setChannelMembers] = useState<AppUser[]>();                                  //userが今表示しているチャンネルのチャンネルメンバー
+  const [channelMembers, setChannelMembers] = useState<AppUser[]>();                               //userが今表示しているチャンネルのチャンネルメンバー
   const [loading, setLoading] = useState(true);                                                    //最初にloading出したいのでtrue
   const [_loading, _setLoading] = useState(true);                                                  //最初に_loading出したいのでtrue
 

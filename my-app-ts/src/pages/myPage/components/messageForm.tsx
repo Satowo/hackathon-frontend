@@ -31,6 +31,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
         e.preventDefault();
         onSubmitEdit(e, messageContent);
         setMessageContent("");
+        setEdited(false);
     };
 
     const onClick = () => {
