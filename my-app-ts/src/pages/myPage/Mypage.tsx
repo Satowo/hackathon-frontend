@@ -69,6 +69,10 @@ const Mypage = () => {
     });
   }, []);
 
+  useEffect(() => {
+    getMessages(userInfo?.channels[userInfo?.channels.length-1]);
+  }, [userInfo])
+
   //他のURLへ移動する関数
   const navigate = useNavigate();
   
@@ -111,7 +115,7 @@ const Mypage = () => {
 
 
     if (channel !== undefined && userInfo?.channels !== undefined){
-      const exists = userInfo?.channels.find(ch => ch.channelId === channel.channelId);
+      const exists = userInfo.channels.find(ch => ch.channelId === channel.channelId);
       if (exists) {
         setNoChannelsDisplay(false);
 
@@ -360,6 +364,7 @@ const Mypage = () => {
         console.log("response is ...", res);
         const userInfoRes = await res.json();
         console.log(userInfoRes);
+        console.log(userInfoRes.channels[userInfoRes.channels.length-1]);
         setUserInfo(userInfoRes);
         setNowChannel(channel);
         _setLoading(false);
@@ -404,6 +409,7 @@ const Mypage = () => {
         const userInfoRes = await res.json();
         console.log(userInfoRes);
         setUserInfo(userInfoRes);
+        
         setNowChannel(userInfoRes?.channels[0]);
         setInChannelsDisplay(true);
         _setLoading(false);
