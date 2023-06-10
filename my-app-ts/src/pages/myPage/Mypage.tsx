@@ -12,6 +12,8 @@ import {FaUser} from "react-icons/fa";
 import {AiOutlinePlusCircle} from "react-icons/ai";
 import {FiMinusCircle} from "react-icons/fi";
 import ChannelHeader from "./components/channelHeader";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 const Mypage = () => {
   type AppUser = {
@@ -445,12 +447,14 @@ const Mypage = () => {
                   </p>
                 </div>
                 <div className="w-3/4 h-10 mb-3 space-x-2">
-                  <button type="button" className="w-full flex items-center justify-center 
+                  <Tippy content={!inChannelsDisplay ? "チャンネルを表示" : "チャンネルを非表示" }>
+                    <button type="button" className="w-full flex items-center justify-center 
                     bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
                     font-semibold rounded-lg" onClick={_setChannelsDisplay}
                     >
-                    {!inChannelsDisplay ? "▶︎  チャンネル" : "▼  チャンネル" }
-                  </button>
+                      {!inChannelsDisplay ? "▶︎  チャンネル" : "▼  チャンネル" }
+                    </button>
+                  </Tippy>
                 </div>
                 {!inChannelsDisplay ? null : (
                   <div className="w-3/4 h-auto space-y-2 mb-6">
@@ -467,12 +471,14 @@ const Mypage = () => {
                   </div>
                 )}
                 <div className="w-3/4 space-y-2 mb-6">
-                    <button type="button" className="w-full flex items-center justify-center 
-                    bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
-                    font-semibold rounded-lg" onClick={getOtherChannels}
-                    >
-                    {!otherChannelsDisplay ? "▶︎  他のチャンネル" : "▼  他のチャンネル" }
-                    </button>
+                    <Tippy content={!inChannelsDisplay ? "他のチャンネルを表示" : "他のチャンネルを非表示" }>
+                      <button type="button" className="w-full flex items-center justify-center 
+                      bg-purple-900 hover:bg-purple-500 text-gray-300 text-opacity-70 
+                      font-semibold rounded-lg" onClick={getOtherChannels}
+                      >
+                      {!otherChannelsDisplay ? "▶︎  他のチャンネル" : "▼  他のチャンネル" }
+                      </button>
+                    </Tippy>
                     {!otherChannelsDisplay ? null : (
                     <div className="w-full space-y-2 mb-6">
                       {allChannelsData.filter((channel: Channel) => 
