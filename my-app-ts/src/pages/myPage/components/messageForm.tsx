@@ -52,6 +52,15 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
                 ></textarea>
+                {(messageContent==="") ? (
+                <div className="w-20 h-10 fixed right-5 bg-gray-200 
+                text-white font-semibold rounded-lg shadow-xl">
+                    <div className="flex items-center justify-center space-x-2 pt-1">
+                        <MdSend/>
+                        <p >送信</p>
+                    </div>
+                </div>
+                ) : (
                 <button type={"submit"} className="w-20 h-10 fixed right-5 bg-green-700 
                 hover:bg-opacity-80 text-white font-semibold rounded-lg shadow-xl">
                     <div className="flex items-center justify-center space-x-2">
@@ -59,6 +68,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                         <p>送信</p>
                     </div>
                 </button>
+                )}
             </form>
         );
     }
@@ -80,9 +90,18 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                     onChange={(e) => setMessageContent(e.target.value)}
                 ></textarea>
                 <div className="flex items-center space-x-5 fixed right-5">
-                    <button type="button" className="rounded-lg text-xl text-gray-700 hover:bg-gray-500 hover:bg-opacity-50" onClick={onClick}>
+                    <button type="button" className="rounded-lg text-xl text-gray-700 hover:bg-gray-500 hover:bg-opacity-50 border border-gray-700" onClick={onClick}>
                         <TbEditOff/>
                     </button>
+                    {(messageContent==="") ? (
+                    <div className="w-20 h-10  bg-gray-200 
+                    text-white font-semibold rounded-lg shadow-xl">
+                        <div className="flex items-center justify-center space-x-2 pt-1">
+                            <MdSend/>
+                            <p >送信</p>
+                        </div>
+                    </div>
+                    ) : (
                     <button type={"submit"} className="w-20 h-10 bg-green-700 
                     hover:bg-opacity-80 text-white font-semibold rounded-lg shadow-xl">
                         <div className="flex items-center justify-center space-x-2">
@@ -90,6 +109,7 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                             <p>送信</p>
                         </div>
                     </button>
+                    )}
                 </div> 
             </form>
         );
