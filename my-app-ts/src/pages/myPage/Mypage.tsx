@@ -14,6 +14,7 @@ import {FiMinusCircle} from "react-icons/fi";
 import ChannelHeader from "./components/channelHeader";
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import pngImage from "./components/undraw_Business_chat_re_gg4h.png"
 
 const Mypage = () => {
   type AppUser = {
@@ -515,6 +516,7 @@ const Mypage = () => {
                         <div className="w-full flex-column items-center justify-center space-y-4 py-10 text-xl font-bold">
                           <p>あなたはまだチャンネルに参加していません！！</p>
                           <p>他のチャンネルからチャンネルに参加しましょう！</p>
+                          <img src={pngImage} alt="" />
                         </div>
                       </div>
                     ) : (
