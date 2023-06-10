@@ -54,16 +54,25 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                     value={messageContent}
                     onChange={(e) => setMessageContent(e.target.value)}
                 ></textarea>
-                {(messageContent==="") ? (
-                    <Tippy content="メッセージが空です">
-                        <div className="w-20 h-10 fixed right-5 bg-gray-200 
+                {(messageContent==="" || messageContent.length > 500) ? (
+                    <div className="w-20 h-10 fixed right-5 bg-gray-200 
                         text-white font-semibold rounded-lg shadow-xl">
-                            <div className="flex items-center justify-center space-x-2 pt-1">
-                                <MdSend/>
-                                <p >送信</p>
-                            </div>
-                        </div>
-                    </Tippy>
+                        {(messageContent==="") ? (
+                            <Tippy content="メッセージが空です">
+                                <div className="flex items-center justify-center space-x-2 pt-1">
+                                    <MdSend/>
+                                    <p >送信</p>
+                                </div> 
+                            </Tippy>
+                        ) : (
+                            <Tippy content="メッセージが長すぎます">
+                                <div className="flex items-center justify-center space-x-2 pt-1">
+                                    <MdSend/>
+                                    <p >送信</p>
+                                </div> 
+                            </Tippy>
+                        )}
+                    </div>
                 ) : (
                     <Tippy content="メッセージを送信する">
                         <button type={"submit"} className="w-20 h-10 fixed right-5 bg-green-700 
@@ -101,16 +110,30 @@ const MessageForm: React.FC<MessageFormProps> = ({onSubmit, onSubmitEdit, userNa
                             <TbEditOff/>
                         </button>
                     </Tippy>
-                    {(messageContent==="") ? (
-                        <Tippy content="メッセージが空です">
-                            <div className="w-20 h-10  bg-gray-200 
-                            text-white font-semibold rounded-lg shadow-xl">
-                                <div className="flex items-center justify-center space-x-2 pt-1">
-                                    <MdSend/>
-                                    <p >送信</p>
+                    {(messageContent==="" || messageContent.length > 500) ? (
+                        <div>
+                            {(messageContent==="") ? ( 
+                            <Tippy content="メッセージが空です">
+                                <div className="w-20 h-10  bg-gray-200 
+                                text-white font-semibold rounded-lg shadow-xl">
+                                    <div className="flex items-center justify-center space-x-2 pt-1">
+                                        <MdSend/>
+                                        <p >送信</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </Tippy>
+                            </Tippy>
+                        ) : (
+                            <Tippy content="メッセージが長すぎます">
+                                <div className="w-20 h-10  bg-gray-200 
+                                text-white font-semibold rounded-lg shadow-xl">
+                                    <div className="flex items-center justify-center space-x-2 pt-1">
+                                        <MdSend/>
+                                        <p >送信</p>
+                                    </div>
+                                </div>
+                            </Tippy>
+                        )}
+                        </div>
                     ) : (
                         <Tippy content="メッセージを送信する">
                             <button type={"submit"} className="w-20 h-10 bg-green-700 
