@@ -2,6 +2,8 @@ import React from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { LuEdit } from "react-icons/lu";
 import { FaUser } from "react-icons/fa";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 type Message = {
   messageId: string;
@@ -51,12 +53,16 @@ const MessageDisplay: React.FC<MessageDisplayProps> = ({ message, userInfo, onCl
             <p className="w-5/6 text-left font-bold py-1">{message.userName}</p>
             {!(message.userId===userInfo?.userId) ? null : (
               <div className="w-1/6 pb-1">
-                <button type="button" className="text-gray-700 rounded-lg hover:bg-gray-500 hover:bg-opacity-50" onClick={onClick}>
-                  <LuEdit/>
-                </button>
-                <button type="button" className="text-red-500 rounded-lg hover:bg-gray-500 hover:bg-opacity-50" onClick={_onClick}>
-                  <FaRegTrashAlt/>
-                </button>
+                <Tippy content="メッセージを編集">
+                  <button type="button" className="text-gray-700 rounded-lg hover:bg-gray-500 hover:bg-opacity-50" onClick={onClick}>
+                      <LuEdit/>
+                  </button>
+                </Tippy>
+                <Tippy content="メッセージを削除">
+                  <button type="button" className="text-red-500 rounded-lg hover:bg-gray-500 hover:bg-opacity-50" onClick={_onClick}>
+                    <FaRegTrashAlt/>
+                  </button>
+                </Tippy>
               </div>
             )}
           </div>

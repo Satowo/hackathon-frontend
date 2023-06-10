@@ -2,6 +2,8 @@ import { useState } from "react";
 import { HiOutlineLogout } from "react-icons/hi";
 import { HiUsers } from "react-icons/hi";
 import { RxReload } from "react-icons/rx";
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
 
 
 type Channel = {
@@ -39,24 +41,30 @@ const ChannelHeader: React.FC<ChannelHeaderProps>= ({logout, nowChannel, getChan
                 </p>
                 )}
                 <div className="flex items-center justify-end space-x-6 ">
-                    <button
-                        className="bg-purple-900 hover:bg-purple-300 text-gray-300 text-opacity-100 text-3xl font-bold py-2 px-2 rounded-lg"
-                        onClick={_onClick_}
-                    >
-                        <RxReload/>
-                    </button>
-                    <button
-                        className="bg-purple-900 hover:bg-purple-300 text-gray-300 text-opacity-100 text-3xl font-bold py-2 px-2 rounded-lg"
-                        onClick={_onClick}
-                    >
-                        <HiUsers/>
-                    </button>
-                    <button
-                        className="bg-purple-900 hover:bg-purple-300 text-gray-300 text-opacity-100 text-3xl font-bold py-2 px-2 rounded-lg"
-                        onClick={onClick}
-                    >
-                        <HiOutlineLogout/>
-                    </button>
+                    <Tippy content="メッセージをリロード">
+                        <button
+                            className="bg-purple-900 hover:bg-purple-300 text-gray-300 text-opacity-100 text-3xl font-bold py-2 px-2 rounded-lg"
+                            onClick={_onClick_}
+                        >
+                            <RxReload/>
+                        </button>
+                    </Tippy>
+                    <Tippy content="チャンネルメンバーを表示">
+                        <button
+                            className="bg-purple-900 hover:bg-purple-300 text-gray-300 text-opacity-100 text-3xl font-bold py-2 px-2 rounded-lg"
+                            onClick={_onClick}
+                        >
+                            <HiUsers/>
+                        </button>
+                    </Tippy>
+                    <Tippy content="ログアウト">
+                        <button
+                            className="bg-purple-900 hover:bg-purple-300 text-gray-300 text-opacity-100 text-3xl font-bold py-2 px-2 rounded-lg"
+                            onClick={onClick}
+                        >
+                            <HiOutlineLogout/>
+                        </button>
+                    </Tippy>
                 </div>
             </div>
         </div>
