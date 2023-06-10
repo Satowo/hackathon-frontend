@@ -62,7 +62,7 @@ const Register = () => {
       return;
     }
 
-    if (registerPassword.length < 5) {
+    if (registerPassword.length < 6) {
       alert("パスワードが短すぎます");
       return;
     }
